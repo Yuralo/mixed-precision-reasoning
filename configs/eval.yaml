@@ -1,0 +1,11 @@
+dataset:
+  name: gsm8k
+  split: test
+  subset: main
+  limit: 5
+  tiny: true
+
+output:
+  runs_dir: runs
+
+seed: 42

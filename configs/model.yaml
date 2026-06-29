@@ -1,0 +1,17 @@
+model:
+  # Small enough for the 3090; override with sshleifer/tiny-gpt2 for smoke tests.
+  name_or_path: Qwen/Qwen2.5-1.5B-Instruct
+  trust_remote_code: false
+  device: auto
+  dtype: auto
+  quantization: none
+  fake_quant_bits: 4
+  use_chat_template: true
+
+generation:
+  max_new_tokens: 64
+  do_sample: false
+  temperature: 0.0
+  top_k_features: 0
+
+seed: 42
