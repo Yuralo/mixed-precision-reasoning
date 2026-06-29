@@ -18,6 +18,14 @@ def evaluation_parser(description: str, default_output: str, default_tokens: str
     parser.add_argument("--tiny", action=argparse.BooleanOptionalAction, default=None)
     parser.add_argument("--max-new-tokens", type=int)
     parser.add_argument("--seed", type=int)
+    parser.add_argument("--log-every", type=int, default=1, help="Log progress every N examples; 0 disables it")
+    parser.add_argument(
+        "--checkpoint-every",
+        type=int,
+        default=10,
+        help="Atomically save partial outputs every N examples; 0 disables checkpoints",
+    )
+    parser.add_argument("--quiet", action="store_true", help="Suppress informational progress logs")
     parser.add_argument("--output", default=default_output)
     parser.add_argument("--token-output", default=default_tokens)
     return parser

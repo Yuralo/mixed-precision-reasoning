@@ -42,6 +42,14 @@ def write_jsonl(path: str | Path, rows: Iterable[dict[str, Any]]) -> None:
             handle.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
+def write_jsonl_atomic(path: str | Path, rows: Iterable[dict[str, Any]]) -> None:
+    """Replace a JSONL file atomically, useful for long-running checkpoints."""
+    target = ensure_parent(path)
+    temporary = target.with_suffix(target.suffix + ".tmp")
+    write_jsonl(temporary, rows)
+    temporary.replace(target)
+
+
 def read_jsonl(path: str | Path) -> list[dict[str, Any]]:
     with Path(path).open("r", encoding="utf-8") as handle:
         return [json.loads(line) for line in handle if line.strip()]

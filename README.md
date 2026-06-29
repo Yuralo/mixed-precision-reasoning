@@ -64,11 +64,13 @@ pip install bitsandbytes>=0.43
 
 python -m scripts.run_fp_eval \
   --model Qwen/Qwen2.5-1.5B-Instruct --device cuda --dtype fp16 \
-  --no-tiny --limit 200 --max-new-tokens 256
+  --no-tiny --limit 200 --max-new-tokens 256 \
+  --log-every 1 --checkpoint-every 10
 
 python -m scripts.run_quant_eval \
   --model Qwen/Qwen2.5-1.5B-Instruct --device cuda --dtype fp16 \
-  --quantization bnb4 --no-tiny --limit 200 --max-new-tokens 256
+  --quantization bnb4 --no-tiny --limit 200 --max-new-tokens 256 \
+  --log-every 1 --checkpoint-every 10
 
 python -m scripts.compare_fp_quant
 python -m scripts.log_features
@@ -79,6 +81,11 @@ python -m scripts.run_oracle_recovery
 Use the same seed, model ID, dataset split, prompt, and decoding settings for both
 runs. The evaluator is greedy by construction. Each run saves model/backend metadata
 so fake quantization cannot be confused with a bitsandbytes result.
+
+Evaluation logs model/dataset loading and per-example progress, including ETA,
+generation speed, and running accuracy. Partial JSONL outputs are atomically saved
+every 10 examples by default. Use `--log-every 5`, `--checkpoint-every 25`, or
+`--quiet` to tune this behavior.
 
 ## Outputs
 

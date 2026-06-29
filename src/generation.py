@@ -3,12 +3,16 @@
 from __future__ import annotations
 
 import math
+import logging
 import time
-from typing import Any
+from typing import Any, Callable
 
 import torch
 
 from .answer_extraction import extract_answer, is_correct
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 def format_prompt(tokenizer: Any, prompt: str, use_chat_template: bool = True) -> str:
@@ -100,9 +104,14 @@ def evaluate_examples(
     model_info: dict[str, Any],
     max_new_tokens: int = 64,
     use_chat_template: bool = True,
+    log_every: int = 1,
+    checkpoint_every: int = 0,
+    checkpoint_callback: Callable[[list[dict[str, Any]], list[dict[str, Any]]], None] | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     outputs, token_features = [], []
-    for example in examples:
+    total = len(examples)
+    evaluation_started = time.perf_counter()
+    for index, example in enumerate(examples, start=1):
         result = generate_with_features(
             model, tokenizer, example["prompt"], max_new_tokens, use_chat_template
         )
@@ -129,4 +138,32 @@ def evaluate_examples(
                     **token,
                 }
             )
+        if log_every > 0 and (index == 1 or index % log_every == 0 or index == total):
+            elapsed = time.perf_counter() - evaluation_started
+            rate = index / elapsed if elapsed else 0.0
+            eta = (total - index) / rate if rate else 0.0
+            running_accuracy = sum(bool(item["correct"]) for item in outputs) / index
+            LOGGER.info(
+                "[%d/%d %5.1f%%] id=%s new_tokens=%d example=%.1fs tok/s=%.1f "
+                "running_acc=%.3f elapsed=%s eta=%s",
+                index,
+                total,
+                100.0 * index / total if total else 100.0,
+                example["example_id"],
+                result["generation_tokens"],
+                result["latency_seconds"],
+                result["tokens_per_second"] or 0.0,
+                running_accuracy,
+                _format_duration(elapsed),
+                _format_duration(eta),
+            )
+        if checkpoint_callback and checkpoint_every > 0 and index % checkpoint_every == 0:
+            checkpoint_callback(outputs, token_features)
     return outputs, token_features
+
+
+def _format_duration(seconds: float) -> str:
+    seconds = max(0, round(seconds))
+    hours, remainder = divmod(seconds, 3600)
+    minutes, secs = divmod(remainder, 60)
+    return f"{hours:d}:{minutes:02d}:{secs:02d}" if hours else f"{minutes:d}:{secs:02d}"
