@@ -278,17 +278,34 @@ actually implement and beat strong baselines using this utility-aware objective.
 
 Do these before collecting another large identical BNB4 sample:
 
-1. Run FP16 temperatures 0.3 and 0.7 on 100 prompts with three samples each.
-2. Measure BNB4-rescue overlap, answer diversity, length, pass-at-k, and majority vote.
-3. Fit the grouped correctness control with precision, temperature, length, entropy,
-   margin, and prompt length; treat it as associational, not causal.
-4. Replicate on one independent setting, preferably a small MATH subset.
-5. Fix stopping so arithmetic expressions cannot be cut after the first number.
-6. Add same-prefix FP/BNB4 logit comparison if H3 survives.
-7. Log peak VRAM, resident model memory, time-to-first-token, and policy latency.
-8. Do not implement token/layer kernels unless an early router becomes useful.
+1. Replicate on one pre-registered independent setting, preferably a small MATH subset.
+2. Reuse the paired outcomes, clean filter, length contrast, and oracle analysis.
+3. Fix stopping so arithmetic expressions cannot be cut after the first number.
+4. Log peak VRAM, resident model memory, time-to-first-token, and policy latency.
+5. Do not implement token/layer kernels unless an early router becomes useful.
 
-## 13. Bottom line
+## 13. Temperature control
+
+The completed control uses 100 prompts and three FP16 samples at each temperature:
+
+| Condition | Per-completion accuracy | Pass@3 | Majority accuracy | BNB4 rescue coverage: any / majority | Mean tokens |
+|---|---:|---:|---:|---:|---:|
+| FP16 T=0.3 | 66.00% | 83.00% | 67.00% | 66.67% / 11.11% | 156.33 |
+| FP16 T=0.7 | 69.67% | 89.00% | 70.00% | 100.00% / 55.56% | 149.90 |
+| FP16 greedy | 69.00% | — | — | — | 145.16 |
+| BNB4 greedy | 63.00% | — | — | — | 168.99 |
+
+There are only nine BNB4-rescue prompts in this subset. Temperature 0.7 produces at
+least one correct FP16 sample for all nine and a correct majority for five. The rescue
+Jaccard is 37.5% because FP16 sampling rescues many additional prompts. A grouped
+correctness model gains −0.0009 ROC-AUC and +0.0004 log loss when precision mode is
+added after temperature and trajectory features—no measurable improvement.
+
+This weakens H3: much of the correctness complementarity is reproducible by ordinary
+sampling. It does not prove full equivalence because BNB4 remains substantially longer
+and majority overlap is incomplete.
+
+## 14. Bottom line
 
 There is a real and statistically credible research signal. The strongest result is
 not that BNB4 is worse—it is that quantization-induced correctness flips are
@@ -296,6 +313,6 @@ predictable across official train/test splits, while a perfect sparse selector h
 large 14.25-point upside over static BNB4.
 
 The current controller and backend do not realize that upside efficiently. The
-project should continue only through the temperature control and one independent
-replication. Its strongest defensible framing today is an empirical study of
-precision-induced trajectory shifts, not yet “precision as a control variable.”
+project should continue only through one independent pre-registered replication. Its
+strongest defensible framing is an empirical study of precision-induced trajectory
+shifts. The strong control-variable and learned-routing claims are unsupported.

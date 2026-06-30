@@ -254,7 +254,7 @@ python -m scripts.plot_control_analysis
 python -m scripts.generate_decision_memo
 ```
 
-The next RTX 3090 experiment is the FP16 temperature control:
+The completed RTX 3090 temperature control was run with:
 
 ```bash
 python -m scripts.run_temperature_baseline \
@@ -263,6 +263,7 @@ python -m scripts.run_temperature_baseline \
   --samples 3 --max-new-tokens 512 --checkpoint-every 20
 
 python -m scripts.analyze_temperature_experiment
+python -m scripts.plot_temperature_analysis
 python -m scripts.generate_decision_memo
 ```
 
@@ -272,13 +273,20 @@ python -m scripts.generate_decision_memo
 - a successful controller that beats entropy or static FP16;
 - activation norms, outlier ratios, FP/Q KL, or hidden-state distances;
 - memory and peak-VRAM measurement;
-- temperature results (the runner and analyzer exist; GPU outputs do not yet);
+- a temperature result showing precision-specific correctness beyond FP16 sampling;
 - BNB8 precision dose response;
 - MATH, critical semantic tasks, or a second model family;
 - optimized mixed-precision kernels.
 
-The recommendation is **continue, but narrow scope**. The defensible framing today is
+The recommendation is **only continue as empirical analysis**. The defensible framing today is
 “Empirical Study of Quantization-Induced Reasoning Trajectory Shifts.” Promote to
 “Precision as a Control Variable” only if temperature sampling does not reproduce the
 BNB4 rescue/failure pattern and the signed effect replicates independently. Otherwise
 keep it empirical or pivot. See [`../results/DECISION_MEMO.md`](../results/DECISION_MEMO.md).
+
+The completed temperature control weakens the strong framing. On 100 prompts,
+temperature 0.7 with three FP16 samples covers all nine BNB4-rescue prompts with at
+least one correct sample and five of nine by majority vote. Rescue-set Jaccard is
+37.5%, so the sets are not identical. The sampled outputs are also 19.09 tokens
+shorter than BNB4 greedy. Precision changes the trajectory signature, but the observed
+correctness complementarity is not unique to precision.

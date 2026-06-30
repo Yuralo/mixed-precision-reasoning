@@ -274,6 +274,10 @@ def plot_temperature_analysis(report: dict, output: str | Path) -> None:
     pass_k = [report["temperatures"][value]["pass_at_k_empirical"] * 100 for value in temperatures]
     majority = [report["temperatures"][value]["majority_vote_accuracy"] * 100 for value in temperatures]
     coverage = [report["temperatures"][value]["quant_rescue_coverage"] * 100 for value in temperatures]
+    majority_coverage = [
+        report["temperatures"][value]["quant_rescue_majority_coverage"] * 100
+        for value in temperatures
+    ]
     jaccard = [report["temperatures"][value]["quant_vs_temperature_rescue_jaccard"] * 100 for value in temperatures]
     x = np.arange(len(temperatures))
     width = 0.24
@@ -285,8 +289,9 @@ def plot_temperature_analysis(report: dict, output: str | Path) -> None:
     axes[0].axhline(report["paired_subset"]["quant_accuracy"] * 100, color="#172033", linestyle="--", label="BNB4 greedy")
     axes[0].set_ylabel("Accuracy / empirical pass@k (%)")
     axes[0].set_title("Sampling outcomes")
-    axes[1].bar(x - width / 2, coverage, width, label="BNB4 rescue coverage", color="#E76F51")
-    axes[1].bar(x + width / 2, jaccard, width, label="Rescue-set Jaccard", color="#8D99AE")
+    axes[1].bar(x - width, coverage, width, label="Any-sample rescue coverage", color="#E76F51")
+    axes[1].bar(x, majority_coverage, width, label="Majority rescue coverage", color="#F4A261")
+    axes[1].bar(x + width, jaccard, width, label="Rescue-set Jaccard", color="#8D99AE")
     axes[1].set_ylabel("Overlap (%)")
     axes[1].set_title("Does temperature reproduce BNB4 rescues?")
     for axis in axes:

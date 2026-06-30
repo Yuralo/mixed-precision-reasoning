@@ -33,12 +33,13 @@ requires running both models and is not a cheap quantized-only routing feature.
 
 ## Current decision
 
-The present evidence says **continue, but narrow scope**. FP16 and BNB4 solve
+The present evidence says **only continue as empirical analysis**. FP16 and BNB4 solve
 meaningfully different subsets, and a per-example oracle reaches 77.25% versus
 69% FP16 and 63% BNB4. However, the learned utility router reaches only 65.5% at a
 10% rerun budget, below entropy (66%) and always-FP16. Early-prefix prediction is
-weak. The strong “precision as a control variable” claim therefore remains a
-hypothesis until the temperature control and one independent replication pass.
+weak. FP16 temperature 0.7 recovers all nine BNB4-rescue prompts with any of three
+samples and five of nine by majority vote. The strong “precision as a control
+variable” claim is therefore unsupported; one independent replication remains.
 
 Read [`results/DECISION_MEMO.md`](results/DECISION_MEMO.md) first.
 
@@ -153,10 +154,10 @@ length, utility, and prefix artifacts from `runs/gsm8k_train/` and
 `runs/gsm8k_test/`. This preparation is analysis-only and does not load a language
 model. Use `--no-prepare-missing` for strict artifact checking.
 
-## RTX 3090: decisive temperature control
+## RTX 3090: completed temperature control
 
-This is the next run. It produces 600 completions: 100 prompts × two temperatures ×
-three samples. It checkpoints and prints progress throughout.
+This run produced 600 completions: 100 prompts × two temperatures × three samples.
+The commands are retained for reproducibility.
 
 ```bash
 python -m scripts.run_temperature_baseline \
@@ -171,15 +172,15 @@ python -m scripts.plot_temperature_analysis
 python -m scripts.generate_decision_memo
 ```
 
-The central comparison is not sampled accuracy alone. Inspect how much the FP16
-temperature rescue set overlaps the deterministic BNB4 rescue set. High overlap
-weakens the precision-specific thesis; low overlap supports it.
+Temperature 0.7 covers all nine deterministic BNB4 rescues with at least one correct
+sample, but only five by majority vote; rescue Jaccard is 37.5%. This weakens the
+precision-specific thesis without proving complete trajectory equivalence.
 
 ## Current scope and next gate
 
-Do not add custom kernels or layer switching yet. The next gates are the temperature
-control and one independent model/dataset/quantizer replication. Current prefix
-features do not justify token-level systems work.
+Do not add custom kernels or layer switching. The only remaining gate is one
+pre-registered independent model or dataset replication. Current temperature and
+prefix results do not justify token-level systems work.
 
 Run logic tests with:
 

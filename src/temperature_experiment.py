@@ -45,6 +45,12 @@ def analyze_temperature_outputs(
         "num_examples": len(common_sample_ids),
         "fp_accuracy": sum(bool(fp[key]["correct"]) for key in common_sample_ids) / len(common_sample_ids),
         "quant_accuracy": sum(bool(quant[key]["correct"]) for key in common_sample_ids) / len(common_sample_ids),
+        "fp_mean_generation_tokens": statistics.fmean(
+            int(fp[key]["generation_tokens"]) for key in common_sample_ids
+        ),
+        "quant_mean_generation_tokens": statistics.fmean(
+            int(quant[key]["generation_tokens"]) for key in common_sample_ids
+        ),
         "quant_rescue_count": len(quant_rescue),
         "quant_induced_failure_count": len(quant_induced_failure),
     }
@@ -66,10 +72,70 @@ def analyze_temperature_outputs(
         majority_rescue = {
             example_id for example_id in majority_success if not fp[example_id]["correct"]
         }
+        majority_failure = {
+            example_id
+            for example_id, values in grouped.items()
+            if fp[example_id]["correct"]
+            and sum(bool(value["correct"]) for value in values) <= len(values) / 2
+        }
+        all_sample_failure = {
+            example_id
+            for example_id, values in grouped.items()
+            if fp[example_id]["correct"] and not any(value["correct"] for value in values)
+        }
         answer_diversity = []
         for values in grouped.values():
             answers = {value.get("predicted_answer") for value in values}
             answer_diversity.append(len(answers))
+        mean_tokens = statistics.fmean(
+            int(value["generation_tokens"]) for values in grouped.values() for value in values
+        )
+        outcome_groups = {
+            "both_correct": {
+                key for key in grouped if fp[key]["correct"] and quant[key]["correct"]
+            },
+            "fp_only": {
+                key for key in grouped if fp[key]["correct"] and not quant[key]["correct"]
+            },
+            "quant_only": {
+                key for key in grouped if not fp[key]["correct"] and quant[key]["correct"]
+            },
+            "both_wrong": {
+                key for key in grouped if not fp[key]["correct"] and not quant[key]["correct"]
+            },
+        }
+        group_sampling = {}
+        for label, example_id_set in outcome_groups.items():
+            example_ids = sorted(example_id_set)
+            successes = [
+                sum(bool(value["correct"]) for value in grouped[example_id])
+                for example_id in example_ids
+            ]
+            completions = sum(len(grouped[example_id]) for example_id in example_ids)
+            group_sampling[label] = {
+                "num_examples": len(example_ids),
+                "per_completion_accuracy": sum(successes) / completions if completions else None,
+                "any_sample_accuracy": sum(value >= 1 for value in successes) / len(successes)
+                if successes
+                else None,
+                "majority_vote_accuracy": sum(
+                    value > len(grouped[example_id]) / 2
+                    for value, example_id in zip(successes, example_ids)
+                )
+                / len(successes)
+                if successes
+                else None,
+                "all_samples_correct_rate": sum(
+                    value == len(grouped[example_id])
+                    for value, example_id in zip(successes, example_ids)
+                )
+                / len(successes)
+                if successes
+                else None,
+                "success_count_histogram": {
+                    str(count): successes.count(count) for count in sorted(set(successes))
+                },
+            }
         report["temperatures"][str(temperature)] = {
             "num_examples": len(grouped),
             "num_completions": sum(len(values) for values in grouped.values()),
@@ -79,15 +145,23 @@ def analyze_temperature_outputs(
             ),
             "pass_at_k_empirical": len(any_success) / len(grouped),
             "majority_vote_accuracy": len(majority_success) / len(grouped),
-            "mean_generation_tokens": statistics.fmean(
-                int(value["generation_tokens"]) for values in grouped.values() for value in values
-            ),
+            "mean_generation_tokens": mean_tokens,
+            "token_delta_vs_fp_greedy": mean_tokens
+            - report["paired_subset"]["fp_mean_generation_tokens"],
+            "token_delta_vs_quant_greedy": mean_tokens
+            - report["paired_subset"]["quant_mean_generation_tokens"],
             "mean_distinct_answers_per_prompt": statistics.fmean(answer_diversity),
             "any_sample_rescue_count": len(temp_rescue),
             "majority_rescue_count": len(majority_rescue),
             "quant_rescues_reproduced_by_any_sample": len(quant_rescue & temp_rescue),
+            "quant_rescues_reproduced_by_majority": len(quant_rescue & majority_rescue),
             "quant_rescue_coverage": (
                 len(quant_rescue & temp_rescue) / len(quant_rescue) if quant_rescue else None
+            ),
+            "quant_rescue_majority_coverage": (
+                len(quant_rescue & majority_rescue) / len(quant_rescue)
+                if quant_rescue
+                else None
             ),
             "quant_vs_temperature_rescue_jaccard": _jaccard(quant_rescue, temp_rescue),
             "quant_vs_majority_rescue_jaccard": _jaccard(quant_rescue, majority_rescue),
@@ -95,6 +169,13 @@ def analyze_temperature_outputs(
                 any(not value["correct"] for value in grouped[example_id])
                 for example_id in quant_induced_failure
             ),
+            "quant_induced_failures_reproduced_by_majority": len(
+                quant_induced_failure & majority_failure
+            ),
+            "quant_induced_failures_reproduced_by_all_samples_wrong": len(
+                quant_induced_failure & all_sample_failure
+            ),
+            "sampling_by_greedy_outcome": group_sampling,
         }
     if fp_tokens is not None and quant_tokens is not None and sampled_tokens is not None:
         report["controlled_correctness_model"] = fit_controlled_correctness_model(

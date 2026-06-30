@@ -50,6 +50,8 @@ class NewAnalysisTests(unittest.TestCase):
         temp = report["temperatures"]["0.3"]
         self.assertEqual(temp["quant_rescues_reproduced_by_any_sample"], 1)
         self.assertEqual(temp["quant_rescue_coverage"], 1.0)
+        self.assertEqual(temp["quant_rescues_reproduced_by_majority"], 0)
+        self.assertEqual(temp["quant_rescue_majority_coverage"], 0.0)
         self.assertAlmostEqual(temp["per_completion_accuracy"], 0.5)
 
 

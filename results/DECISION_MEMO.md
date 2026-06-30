@@ -2,11 +2,11 @@
 
 ## Decision
 
-**Recommendation: Continue, but narrow scope.**
+**Recommendation: Only continue as empirical analysis.**
 
 **Strongest defensible framing today: C. Empirical Study of Quantization-Induced Reasoning Trajectory Shifts.**
 
-The paired precision effect is real in these artifacts, but the stronger causal/control thesis is not yet earned. The current evidence supports a short, explicitly gated continuation: run the temperature control and one independent replication. Do not invest in token-level precision kernels unless those gates pass.
+The paired precision effect is real, but the temperature control weakens the claim that precision is a distinct, exploitable control variable. Continue only through one independent replication; do not invest in token-level kernels or present adaptive precision as a demonstrated system.
 
 ## 1. What replicated?
 
@@ -30,7 +30,17 @@ The clean subset retains 25 BNB4-only wins and 47 FP16-only wins across 325 exam
 - **The clean trajectory contrast is suggestive, not conclusive.** Clean BNB4 rescues are +21.72 tokens longer on average, while clean BNB4-induced failures are -14.30; the groups are small and their individual confidence intervals include zero.
 - **Naive first-divergence position is not mechanistic evidence.** Independent greedy outputs often differ immediately because tokenization/wording paths split; a same-prefix logit comparison is needed.
 - **Efficiency is currently negative on this hardware.** BNB4 is memory-saving but slower at batch-one decoding in the recorded RTX 3090 run. No speed claim is justified.
-- **H3 is unanswered.** No FP16 temperature artifact is present, so we cannot yet claim precision is distinct from ordinary decoding noise.
+- **H3 is weakened.** At temperature 0.7, any of three FP16 samples solves 100.00% of the BNB4-rescue prompts; majority vote reproduces 55.56%. Adding precision mode to the grouped controlled model changes ROC-AUC by only -0.0009 and log loss by +0.0004. Precision does not add predictive value in this diagnostic.
+- **Temperature is not fully equivalent either.** The temperature-0.7 rescue-set Jaccard is only 37.50%, and its mean output is -19.09 tokens relative to BNB4 greedy. Sampling reproduces correctness opportunities more than it reproduces the BNB4 trajectory-length shift.
+
+## Temperature-versus-quantization control
+
+| Temperature | Per-completion accuracy | Empirical pass@k | Majority accuracy | Any-sample BNB4 rescue coverage | Majority BNB4 rescue coverage | Rescue Jaccard | Mean tokens |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.3 | 66.00% | 83.00% | 67.00% | 66.67% | 11.11% | 33.33% | 156.33 |
+| 0.7 | 69.67% | 89.00% | 70.00% | 100.00% | 55.56% | 37.50% | 149.90 |
+
+Interpret overlap jointly with the grouped controlled-correctness diagnostic. Any-sample pass@k is expected to rise with repeated sampling and is not itself evidence of equivalence.
 
 ## 3. Strongest thesis framing
 
@@ -40,12 +50,11 @@ The phrase “precision as a control variable” should remain a hypothesis in t
 
 ## 4. Continue or not?
 
-Continue for one focused evidence sprint, not as an open-ended systems build.
+Continue only as a bounded empirical replication, not as an adaptive-precision systems build.
 
-1. Run 100 test prompts at FP16 temperatures 0.3 and 0.7 with three samples each.
-2. Compare BNB4 rescue-set overlap, answer diversity, length, and majority-vote outcomes.
-3. Replicate greedy FP16/BNB4 on one genuinely independent setting: preferably a small MATH subset or Qwen2.5-3B, not another GSM8K slice alone.
-4. Stop token-level implementation work unless a prefix router beats entropy and shows useful net gain before token 64.
+1. Replicate greedy FP16/BNB4 on one genuinely independent setting: preferably a small MATH subset or Qwen2.5-3B, not another GSM8K slice alone.
+2. Pre-register the same paired outcomes, clean filter, token-length contrast, and oracle selector before looking at the replication.
+3. Stop token-level implementation work unless a prefix router beats entropy and shows useful net gain before token 64.
 
 ### Kill criteria
 
@@ -53,4 +62,4 @@ Pivot away if BNB4-only wins largely coincide with ordinary FP16 sampling rescue
 
 ## Bottom line
 
-There is a credible phenomenon: numerical precision changes which GSM8K problems this model solves. There is not yet evidence that precision is a practically controllable reasoning knob. The project is worth the next two discriminating experiments; it is not yet worth custom kernels or a broad PhD-level claim.
+Numerical precision changes the observed greedy trajectory, but ordinary FP16 sampling recovers much of the same correctness complementarity. The strong control-variable thesis is currently unsupported. One independent replication is justified; custom kernels and a broad adaptive-precision claim are not.

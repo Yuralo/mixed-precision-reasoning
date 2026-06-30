@@ -38,7 +38,7 @@
         <p>best possible selector accuracy on 400 held-out test examples, versus 63% BNB4 and 69% FP16.</p>
         <div class="signal-row"><span>Useful FP interventions</span><strong>57 / 400</strong></div>
         <div class="signal-row"><span>Required oracle budget</span><strong>14.25%</strong></div>
-        <p class="warning">Decision: continue, but narrow scope. The oracle demonstrates opportunity; the learned controller has not captured it.</p>
+        <p class="warning">Decision: only continue as empirical analysis. Temperature sampling recovers much of the same correctness complementarity, while learned control remains weak.</p>
       </div>
     </div>
   </header>
@@ -96,7 +96,7 @@
       <div class="callout caution">
         <strong>Audit status:</strong> the Stage 1 dataset contains 400 aligned train pairs and 400 aligned held-out test pairs with no duplicate IDs, reference mismatches, or extraction drift. The earlier 200-example run remains exploratory and is stored separately under <code>runs/first/</code>.
       </div>
-      <div class="callout caution"><strong>Current verdict:</strong> continue for one focused evidence sprint, with framing C: <em>Empirical Study of Quantization-Induced Reasoning Trajectory Shifts</em>. “Precision as a Control Variable” is not yet established.</div>
+      <div class="callout caution"><strong>Current verdict:</strong> only continue through one independent empirical replication, with framing C: <em>Empirical Study of Quantization-Induced Reasoning Trajectory Shifts</em>. The strong “Precision as a Control Variable” claim is currently unsupported.</div>
 
       <h3 class="subheading">Stage 1 · 400 held-out GSM8K test examples · RTX 3090</h3>
       <div class="metric-grid">
@@ -200,6 +200,20 @@
           <p><a href="TOKEN_LENGTH_STUDY.md">Read the complete token-length study →</a></p>
         </div>
       </div>
+
+      <h3 class="subheading">Temperature control · 100 prompts · three samples each</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Condition</th><th>Per-completion</th><th>Pass@3</th><th>Majority</th><th>BNB4-rescue coverage: any / majority</th><th>Mean tokens</th></tr></thead>
+          <tbody>
+            <tr><td>FP16 temperature 0.3</td><td>66.00%</td><td>83.00%</td><td>67.00%</td><td>66.67% / 11.11%</td><td>156.33</td></tr>
+            <tr><td>FP16 temperature 0.7</td><td>69.67%</td><td>89.00%</td><td>70.00%</td><td>100.00% / 55.56%</td><td>149.90</td></tr>
+            <tr><td>FP16 greedy</td><td>69.00%</td><td>—</td><td>—</td><td>—</td><td>145.16</td></tr>
+            <tr><td>BNB4 greedy</td><td>63.00%</td><td>—</td><td>—</td><td>—</td><td>168.99</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout caution"><strong>H3 is weakened:</strong> temperature 0.7 produces a correct sample for all nine BNB4-rescue prompts, and adding precision mode to the grouped controlled model changes ROC-AUC by −0.0009. But equivalence is incomplete: majority vote recovers only five of nine, rescue-set Jaccard is 37.5%, and temperature outputs are 19.09 tokens shorter than BNB4.</div>
     </section>
 
     <section id="figures" class="tinted">
@@ -228,6 +242,7 @@
         <figure><img src="../results/figures/utility_calibration.png" alt="Controller calibration"><figcaption>Calibration of predicted beneficial FP switches</figcaption></figure>
         <figure><img src="../results/figures/utility_risk_coverage.png" alt="Controller risk coverage curve"><figcaption>Selective risk and accuracy under abstention</figcaption></figure>
         <figure><img src="../results/figures/prefix_prediction.png" alt="Prefix prediction performance"><figcaption>Early routing signal emerges too late and remains weak</figcaption></figure>
+        <figure><img src="../results/figures/temperature_overlap.png" alt="Temperature and BNB4 rescue overlap"><figcaption>FP16 sampling recovers much of BNB4's correctness complementarity</figcaption></figure>
       </div>
     </section>
 
@@ -267,8 +282,8 @@
     <section id="next" class="next-section">
       <div>
         <p class="eyebrow">07 · Next experiment</p>
-        <h2>Run the decisive temperature control.</h2>
-        <p>The signed utility controller and prefix test are complete and weak. Next run 100 prompts at FP16 temperatures 0.3 and 0.7 with three samples each, measure rescue-set overlap with deterministic BNB4, then perform one independent model or dataset replication.</p>
+        <h2>Run one pre-registered independent replication.</h2>
+        <p>The temperature control is complete and weakens the precision-specific claim. Next replicate the paired greedy experiment on a small MATH subset or Qwen2.5-3B, using the same outcomes, clean filter, length contrast, and oracle analysis. Do not build token-level kernels.</p>
       </div>
       <div class="decision-list">
         <h3>Current gate status:</h3>
@@ -276,7 +291,7 @@
         <label><span>✓</span> FP16-only and BNB4-only wins replicate across splits</label>
         <label><span>×</span> Learned controller beats entropy at 10%</label>
         <label><span>×</span> Early prefix routing is practically useful</label>
-        <label><span>?</span> Precision is distinct from temperature</label>
+        <label><span>×</span> Precision clearly adds beyond temperature</label>
         <label><span>?</span> Effect replicates on another setting</label>
       </div>
     </section>

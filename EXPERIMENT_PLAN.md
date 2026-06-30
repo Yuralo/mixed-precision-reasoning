@@ -167,11 +167,10 @@ Observed gate result: the paired precision effect survives, but the learned sign
 utility router does not beat entropy at 10%, and 16/32-token prefix prediction is
 weak. This blocks token-level systems work for now.
 
-## Stage 3 — precision versus temperature (next RTX 3090 run)
+## Stage 3 — precision versus temperature (complete)
 
-Start with 100 test prompts, two temperatures, and three samples. This is 600 FP16
-completions. It is intentionally smaller than the paired run because the immediate
-question is success-set overlap, not a final leaderboard number.
+The completed run contains 100 test prompts, two temperatures, and three samples:
+600 FP16 completions. The commands are retained for reproduction.
 
 ```bash
 python -m scripts.run_temperature_baseline \
@@ -193,9 +192,10 @@ Inspect:
 - per-completion, pass-at-3, and majority-vote accuracy;
 - generated length and answer diversity.
 
-Precision-specific evidence is stronger if BNB4 rescues have low overlap with FP16
-temperature rescues and retain a distinct trajectory signature. High overlap weakens
-the control-variable claim.
+Observed result: temperature 0.7 covers all nine BNB4 rescues with any of three
+samples and five of nine by majority vote. Rescue Jaccard is 37.5%. The controlled
+correctness model gains no predictive value from precision mode. This weakens the
+control-variable claim, although BNB4 retains a distinct length signature.
 
 ## Stage 4 — one independent replication
 

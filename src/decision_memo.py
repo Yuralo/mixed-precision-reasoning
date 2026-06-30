@@ -52,7 +52,21 @@ def build_decision_memo(
         recommendation = "Continue, but narrow scope"
     else:
         framing = "C. Empirical Study of Quantization-Induced Reasoning Trajectory Shifts"
-        recommendation = "Continue, but narrow scope"
+        recommendation = (
+            "Only continue as empirical analysis"
+            if temperature_complete
+            else "Continue, but narrow scope"
+        )
+
+    opening = (
+        "The paired precision effect is real, but the temperature control weakens the claim that precision is a distinct, exploitable control variable. "
+        "Continue only through one independent replication; do not invest in token-level kernels or present adaptive precision as a demonstrated system."
+        if temperature_complete
+        else
+        "The paired precision effect is real in these artifacts, but the stronger causal/control thesis is not yet earned. "
+        "The current evidence supports a short, explicitly gated continuation: run the temperature control and one independent replication. "
+        "Do not invest in token-level precision kernels unless those gates pass."
+    )
 
     lines = [
         "# Continue-or-pivot decision memo",
@@ -63,9 +77,7 @@ def build_decision_memo(
         "",
         f"**Strongest defensible framing today: {framing}.**",
         "",
-        "The paired precision effect is real in these artifacts, but the stronger causal/control thesis is not yet earned. "
-        "The current evidence supports a short, explicitly gated continuation: run the temperature control and one independent replication. "
-        "Do not invest in token-level precision kernels unless those gates pass.",
+        opening,
         "",
         "## 1. What replicated?",
         "",
@@ -99,7 +111,17 @@ def build_decision_memo(
         "- **Efficiency is currently negative on this hardware.** BNB4 is memory-saving but slower at batch-one decoding in the recorded RTX 3090 run. No speed claim is justified.",
     ]
     if temperature_complete:
-        lines.extend(["- **Temperature control is complete**; its rescue-set overlap is summarized below."])
+        t07 = temperature["temperatures"].get("0.7", {})
+        controlled = temperature.get("controlled_correctness_model", {}).get(
+            "delta_when_adding_precision", {}
+        )
+        lines.extend(
+            [
+                f"- **H3 is weakened.** At temperature 0.7, any of three FP16 samples solves {_pct(t07.get('quant_rescue_coverage', 0.0))} of the BNB4-rescue prompts; majority vote reproduces {_pct(t07.get('quant_rescue_majority_coverage', 0.0))}. "
+                f"Adding precision mode to the grouped controlled model changes ROC-AUC by only {controlled.get('roc_auc', 0.0):+.4f} and log loss by {controlled.get('log_loss', 0.0):+.4f}. Precision does not add predictive value in this diagnostic.",
+                f"- **Temperature is not fully equivalent either.** The temperature-0.7 rescue-set Jaccard is only {_pct(t07.get('quant_vs_temperature_rescue_jaccard', 0.0))}, and its mean output is {t07.get('token_delta_vs_quant_greedy', 0.0):+.2f} tokens relative to BNB4 greedy. Sampling reproduces correctness opportunities more than it reproduces the BNB4 trajectory-length shift.",
+            ]
+        )
     else:
         lines.extend(["- **H3 is unanswered.** No FP16 temperature artifact is present, so we cannot yet claim precision is distinct from ordinary decoding noise."])
     lines.extend(
@@ -115,12 +137,23 @@ def build_decision_memo(
             "",
             "## 4. Continue or not?",
             "",
-            "Continue for one focused evidence sprint, not as an open-ended systems build.",
+            (
+                "Continue only as a bounded empirical replication, not as an adaptive-precision systems build."
+                if temperature_complete
+                else "Continue for one focused evidence sprint, not as an open-ended systems build."
+            ),
             "",
-            "1. Run 100 test prompts at FP16 temperatures 0.3 and 0.7 with three samples each.",
-            "2. Compare BNB4 rescue-set overlap, answer diversity, length, and majority-vote outcomes.",
-            "3. Replicate greedy FP16/BNB4 on one genuinely independent setting: preferably a small MATH subset or Qwen2.5-3B, not another GSM8K slice alone.",
-            "4. Stop token-level implementation work unless a prefix router beats entropy and shows useful net gain before token 64.",
+            (
+                "1. Replicate greedy FP16/BNB4 on one genuinely independent setting: preferably a small MATH subset or Qwen2.5-3B, not another GSM8K slice alone."
+                if temperature_complete
+                else "1. Run 100 test prompts at FP16 temperatures 0.3 and 0.7 with three samples each."
+            ),
+            (
+                "2. Pre-register the same paired outcomes, clean filter, token-length contrast, and oracle selector before looking at the replication."
+                if temperature_complete
+                else "2. Compare BNB4 rescue-set overlap, answer diversity, length, and majority-vote outcomes."
+            ),
+            "3. Stop token-level implementation work unless a prefix router beats entropy and shows useful net gain before token 64.",
             "",
             "### Kill criteria",
             "",
@@ -129,8 +162,13 @@ def build_decision_memo(
             "",
             "## Bottom line",
             "",
-            "There is a credible phenomenon: numerical precision changes which GSM8K problems this model solves. There is not yet evidence that precision is a practically controllable reasoning knob. "
-            "The project is worth the next two discriminating experiments; it is not yet worth custom kernels or a broad PhD-level claim.",
+            (
+                "Numerical precision changes the observed greedy trajectory, but ordinary FP16 sampling recovers much of the same correctness complementarity. "
+                "The strong control-variable thesis is currently unsupported. One independent replication is justified; custom kernels and a broad adaptive-precision claim are not."
+                if temperature_complete
+                else "There is a credible phenomenon: numerical precision changes which GSM8K problems this model solves. There is not yet evidence that precision is a practically controllable reasoning knob. "
+                "The project is worth the next two discriminating experiments; it is not yet worth custom kernels or a broad PhD-level claim."
+            ),
             "",
         ]
     )
@@ -138,14 +176,15 @@ def build_decision_memo(
         temperature_lines = [
             "## Temperature-versus-quantization control",
             "",
-            "| Temperature | Per-completion accuracy | Empirical pass@k | Majority accuracy | BNB4 rescue coverage | Rescue Jaccard |",
-            "|---:|---:|---:|---:|---:|---:|",
+            "| Temperature | Per-completion accuracy | Empirical pass@k | Majority accuracy | Any-sample BNB4 rescue coverage | Majority BNB4 rescue coverage | Rescue Jaccard | Mean tokens |",
+            "|---:|---:|---:|---:|---:|---:|---:|---:|",
         ]
         for value, row in sorted(temperature["temperatures"].items(), key=lambda item: float(item[0])):
             temperature_lines.append(
                 f"| {value} | {_pct(row['per_completion_accuracy'])} | {_pct(row['pass_at_k_empirical'])} | "
                 f"{_pct(row['majority_vote_accuracy'])} | {_pct(row['quant_rescue_coverage']) if row['quant_rescue_coverage'] is not None else 'n/a'} | "
-                f"{_pct(row['quant_vs_temperature_rescue_jaccard']) if row['quant_vs_temperature_rescue_jaccard'] is not None else 'n/a'} |"
+                f"{_pct(row.get('quant_rescue_majority_coverage')) if row.get('quant_rescue_majority_coverage') is not None else 'n/a'} | "
+                f"{_pct(row['quant_vs_temperature_rescue_jaccard']) if row['quant_vs_temperature_rescue_jaccard'] is not None else 'n/a'} | {row['mean_generation_tokens']:.2f} |"
             )
         temperature_lines.extend(
             [
@@ -165,7 +204,11 @@ def build_decision_memo(
         "learned_accuracy_at_10pct": learned10["accuracy"],
         "entropy_accuracy_at_10pct": entropy10["accuracy"],
         "oracle_accuracy_at_10pct": oracle10["accuracy"],
-        "next_gate": "FP16 temperature baseline on 100 prompts, then one independent replication",
+        "next_gate": (
+            "One pre-registered independent model or dataset replication"
+            if temperature_complete
+            else "FP16 temperature baseline on 100 prompts, then one independent replication"
+        ),
     }
     return "\n".join(lines), decision
 
