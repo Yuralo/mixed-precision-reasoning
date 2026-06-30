@@ -15,6 +15,35 @@ Send back `runs/diagnostics.json`, `runs/oracle_recovery.json`, and the figures 
 `runs/figures/`. This tells us whether the 54% answer-flip rate is partly caused by
 truncation or fallback answer extraction.
 
+## Stage 0.5 — clean 20-example generation pilot
+
+Before the held-out experiment, verify the revised concise prompt, explicit-answer
+parser, and answer-aware stopping on 20 examples. Keep these outputs separate from
+the legacy run.
+
+```bash
+python -m scripts.run_fp_eval \
+  --model Qwen/Qwen2.5-1.5B-Instruct --device cuda --dtype fp16 \
+  --dataset-split test --no-tiny --limit 20 --max-new-tokens 384 \
+  --stop-after-answer --output runs/pilot_v2/fp_outputs.jsonl \
+  --token-output runs/pilot_v2/fp_token_features.jsonl
+
+python -m scripts.run_quant_eval \
+  --model Qwen/Qwen2.5-1.5B-Instruct --device cuda --dtype fp16 \
+  --quantization bnb4 --dataset-split test --no-tiny --limit 20 \
+  --max-new-tokens 384 --stop-after-answer \
+  --output runs/pilot_v2/quant_outputs.jsonl \
+  --token-output runs/pilot_v2/quant_token_features.jsonl
+
+python -m scripts.diagnose_runs \
+  --fp runs/pilot_v2/fp_outputs.jsonl \
+  --quant runs/pilot_v2/quant_outputs.jsonl \
+  --assumed-max-new-tokens 384 --output runs/pilot_v2/diagnostics.json
+```
+
+Do not proceed unless both runs contain 20 examples, explicit-answer rate is high,
+and token-cap rate is low.
+
 ## Stage 1 — held-out BNB4 validation on the RTX 3090
 
 Use 400 official training examples only to fit the sensitivity predictor, then test

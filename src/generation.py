@@ -9,7 +9,13 @@ from typing import Any, Callable
 
 import torch
 
-from .answer_extraction import extract_answer, extract_hash_answer, is_correct
+from .answer_extraction import (
+    extract_answer,
+    extract_explicit_answer,
+    extract_hash_answer,
+    extract_marked_answer,
+    is_correct,
+)
 
 
 LOGGER = logging.getLogger(__name__)
@@ -87,7 +93,7 @@ def generate_with_features(
             break
         if stop_after_answer:
             partial_text = tokenizer.decode(generated, skip_special_tokens=True)
-            if answer_detected_at is None and extract_hash_answer(partial_text) is not None:
+            if answer_detected_at is None and extract_marked_answer(partial_text) is not None:
                 answer_detected_at = position
             if answer_detected_at is not None and position - answer_detected_at >= answer_stop_grace_tokens:
                 stop_reason = "answer_detected"
@@ -109,6 +115,7 @@ def generate_with_features(
         "stop_reason": stop_reason,
         "hit_max_new_tokens": stop_reason == "max_new_tokens",
         "has_hash_answer": extract_hash_answer(text) is not None,
+        "has_explicit_answer": extract_explicit_answer(text) is not None,
         "token_features": token_rows,
     }
 
@@ -153,6 +160,7 @@ def evaluate_examples(
             "stop_reason": result["stop_reason"],
             "hit_max_new_tokens": result["hit_max_new_tokens"],
             "has_hash_answer": result["has_hash_answer"],
+            "has_explicit_answer": result["has_explicit_answer"],
             "model": model_info,
         }
         outputs.append(row)

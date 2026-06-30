@@ -216,8 +216,8 @@ def _oracle_figure(report: dict, output_dir: Path, formats: list[str]) -> list[s
 
 def _diagnostics_figure(report: dict, output_dir: Path, formats: list[str]) -> list[str]:
     labels = ["Hit token cap", "Explicit #### answer", "No numeric answer"]
-    fp = [report["fp"]["hit_max_new_tokens_rate"], report["fp"]["explicit_hash_answer_rate"], report["fp"]["no_numeric_answer_rate"]]
-    quant = [report["quant"]["hit_max_new_tokens_rate"], report["quant"]["explicit_hash_answer_rate"], report["quant"]["no_numeric_answer_rate"]]
+    fp = [report["fp"]["hit_max_new_tokens_rate"], report["fp"]["explicit_answer_rate"], report["fp"]["no_numeric_answer_rate"]]
+    quant = [report["quant"]["hit_max_new_tokens_rate"], report["quant"]["explicit_answer_rate"], report["quant"]["no_numeric_answer_rate"]]
     x = np.arange(len(labels))
     width = 0.36
     fig, axis = plt.subplots(figsize=(7.5, 4.2))

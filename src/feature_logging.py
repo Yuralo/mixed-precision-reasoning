@@ -60,6 +60,8 @@ def build_feature_tables(
                 "quant_hit_max_new_tokens": comp.get("quant_hit_max_new_tokens"),
                 "fp_has_hash_answer": comp.get("fp_has_hash_answer"),
                 "quant_has_hash_answer": comp.get("quant_has_hash_answer"),
+                "fp_has_explicit_answer": comp.get("fp_has_explicit_answer", comp.get("fp_has_hash_answer")),
+                "quant_has_explicit_answer": comp.get("quant_has_explicit_answer", comp.get("quant_has_hash_answer")),
                 "max_entropy": max(entropies),
                 "mean_entropy": mean(entropies),
                 "min_logit_margin": min(margins),

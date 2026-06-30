@@ -136,8 +136,8 @@ def _quality_filtered(frame: pd.DataFrame, quality_filter: str) -> pd.DataFrame:
     if quality_filter == "none":
         return frame
     required = {
-        "fp_has_hash_answer",
-        "quant_has_hash_answer",
+        "fp_has_explicit_answer",
+        "quant_has_explicit_answer",
         "fp_hit_max_new_tokens",
         "quant_hit_max_new_tokens",
     }
@@ -146,8 +146,8 @@ def _quality_filtered(frame: pd.DataFrame, quality_filter: str) -> pd.DataFrame:
         raise ValueError(
             f"quality_filter={quality_filter!r} requires regenerated feature columns: {missing}"
         )
-    valid = frame["fp_has_hash_answer"].fillna(False).astype(bool) & frame[
-        "quant_has_hash_answer"
+    valid = frame["fp_has_explicit_answer"].fillna(False).astype(bool) & frame[
+        "quant_has_explicit_answer"
     ].fillna(False).astype(bool)
     if quality_filter == "clean":
         valid &= ~frame["fp_hit_max_new_tokens"].fillna(True).astype(bool)

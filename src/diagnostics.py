@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .answer_extraction import extract_answer, extract_hash_answer
+from .answer_extraction import extract_answer, extract_explicit_answer
 from .metrics import comparison_summary
 
 
@@ -14,15 +14,15 @@ def _run_quality(rows: list[dict[str, Any]], assumed_max_new_tokens: int) -> dic
         bool(row.get("hit_max_new_tokens", row.get("generation_tokens", 0) >= assumed_max_new_tokens))
         for row in rows
     ]
-    strict = [extract_hash_answer(row.get("generation", "")) for row in rows]
+    strict = [extract_explicit_answer(row.get("generation", "")) for row in rows]
     fallback = [extract_answer(row.get("generation", "")) for row in rows]
     return {
         "num_examples": n,
         "accuracy": sum(bool(row.get("correct")) for row in rows) / n if n else 0.0,
         "hit_max_new_tokens_count": sum(hit_cap),
         "hit_max_new_tokens_rate": sum(hit_cap) / n if n else 0.0,
-        "explicit_hash_answer_count": sum(answer is not None for answer in strict),
-        "explicit_hash_answer_rate": sum(answer is not None for answer in strict) / n if n else 0.0,
+        "explicit_answer_count": sum(answer is not None for answer in strict),
+        "explicit_answer_rate": sum(answer is not None for answer in strict) / n if n else 0.0,
         "no_numeric_answer_count": sum(answer is None for answer in fallback),
         "no_numeric_answer_rate": sum(answer is None for answer in fallback) / n if n else 0.0,
         "mean_generation_tokens": (
@@ -47,8 +47,8 @@ def generation_diagnostics(
         fp, quant = fp_by_id[example_id], quant_by_id[example_id]
         fp_cap = bool(fp.get("hit_max_new_tokens", fp.get("generation_tokens", 0) >= assumed_max_new_tokens))
         q_cap = bool(quant.get("hit_max_new_tokens", quant.get("generation_tokens", 0) >= assumed_max_new_tokens))
-        fp_hash = extract_hash_answer(fp.get("generation", ""))
-        q_hash = extract_hash_answer(quant.get("generation", ""))
+        fp_hash = extract_explicit_answer(fp.get("generation", ""))
+        q_hash = extract_explicit_answer(quant.get("generation", ""))
         gold = extract_answer(fp.get("reference", ""))
         if not fp_cap and not q_cap:
             both_not_truncated += 1
@@ -66,7 +66,7 @@ def generation_diagnostics(
         "quant": _run_quality(quant_rows, assumed_max_new_tokens),
         "matched_examples": len(shared),
         "both_not_truncated_count": both_not_truncated,
-        "both_explicit_hash_answer_count": both_explicit,
+        "both_explicit_answer_count": both_explicit,
         "strict_explicit_answer_summary": comparison_summary(strict_comparisons),
         "nontruncated_strict_summary": comparison_summary(clean_comparisons),
     }

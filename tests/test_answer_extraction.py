@@ -1,6 +1,6 @@
 import unittest
 
-from src.answer_extraction import extract_answer, extract_hash_answer, is_correct
+from src.answer_extraction import extract_answer, extract_explicit_answer, extract_hash_answer, is_correct
 
 
 class AnswerExtractionTests(unittest.TestCase):
@@ -16,6 +16,12 @@ class AnswerExtractionTests(unittest.TestCase):
     def test_strict_hash_extraction(self):
         self.assertIsNone(extract_hash_answer("The final number is 8"))
         self.assertEqual(extract_hash_answer("Therefore #### 8"), "8")
+
+    def test_qwen_explicit_answer_styles(self):
+        self.assertEqual(extract_explicit_answer("Final answer: $18"), "18")
+        self.assertEqual(extract_explicit_answer(r"Therefore, the answer is \\boxed{540}."), "540")
+        self.assertEqual(extract_explicit_answer("The total is **3 bolts**."), "3")
+        self.assertIsNone(extract_explicit_answer("The unfinished calculation is 60 cups"))
 
 
 if __name__ == "__main__":

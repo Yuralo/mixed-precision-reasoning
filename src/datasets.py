@@ -16,8 +16,10 @@ TINY_GSM8K = [
 
 def reasoning_prompt(question: str) -> str:
     return (
-        "Solve the problem step by step. End with the final numeric answer in the "
-        "format '#### answer'.\n\nProblem: " + question
+        "Solve this arithmetic word problem correctly and concisely. Use at most 8 short "
+        "reasoning lines. Your very last line must be exactly 'FINAL_ANSWER: <number>' "
+        "with only the numeric answer after the colon. Do not write anything after that "
+        "line.\n\nProblem: " + question
     )
 
 
