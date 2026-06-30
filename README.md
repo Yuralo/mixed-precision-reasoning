@@ -148,6 +148,11 @@ python -m scripts.plot_control_analysis
 python -m scripts.generate_decision_memo
 ```
 
+`generate_decision_memo` automatically rebuilds missing audit, trajectory, token-
+length, utility, and prefix artifacts from `runs/gsm8k_train/` and
+`runs/gsm8k_test/`. This preparation is analysis-only and does not load a language
+model. Use `--no-prepare-missing` for strict artifact checking.
+
 ## RTX 3090: decisive temperature control
 
 This is the next run. It produces 600 completions: 100 prompts × two temperatures ×
