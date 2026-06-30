@@ -42,7 +42,12 @@ def generate_with_features(
     use_chat_template: bool = True,
     stop_after_answer: bool = False,
     answer_stop_grace_tokens: int = 4,
+    do_sample: bool = False,
+    temperature: float = 1.0,
+    generator: torch.Generator | None = None,
 ) -> dict[str, Any]:
+    if do_sample and temperature <= 0:
+        raise ValueError("temperature must be positive when sampling")
     rendered = format_prompt(tokenizer, prompt, use_chat_template)
     encoded = tokenizer(rendered, return_tensors="pt")
     input_ids = encoded["input_ids"].to(_input_device(model))
@@ -65,13 +70,19 @@ def generate_with_features(
             return_dict=True,
         )
         logits = outputs.logits[:, -1, :].float()
+        if do_sample:
+            logits = logits / temperature
         log_probs = torch.log_softmax(logits, dim=-1)
         probs = log_probs.exp()
         top_probs, top_ids = torch.topk(probs, k=2, dim=-1)
-        token_id = int(top_ids[0, 0].item())
+        token_id = int(
+            torch.multinomial(probs[0], 1, generator=generator).item()
+            if do_sample
+            else top_ids[0, 0].item()
+        )
         entropy = float((-(probs * log_probs).sum(dim=-1))[0].item())
         margin = float((logits[0, top_ids[0, 0]] - logits[0, top_ids[0, 1]]).item())
-        probability = float(top_probs[0, 0].item())
+        probability = float(probs[0, token_id].item())
         token_text = tokenizer.decode([token_id], skip_special_tokens=False)
         token_rows.append(
             {
@@ -84,6 +95,8 @@ def generate_with_features(
                 "logit_margin": margin,
                 "top2_token_id": int(top_ids[0, 1].item()),
                 "top2_probability": float(top_probs[0, 1].item()),
+                "top1_token_id": int(top_ids[0, 0].item()),
+                "selected_was_top1": token_id == int(top_ids[0, 0].item()),
             }
         )
         generated.append(token_id)
@@ -116,6 +129,8 @@ def generate_with_features(
         "hit_max_new_tokens": stop_reason == "max_new_tokens",
         "has_hash_answer": extract_hash_answer(text) is not None,
         "has_explicit_answer": extract_explicit_answer(text) is not None,
+        "do_sample": do_sample,
+        "temperature": temperature if do_sample else 0.0,
         "token_features": token_rows,
     }
 

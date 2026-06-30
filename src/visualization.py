@@ -44,6 +44,7 @@ def make_figures(
     diagnostics_path: str | Path | None,
     output_dir: str | Path,
     formats: list[str],
+    audit_path: str | Path | None = None,
 ) -> dict[str, Any]:
     plt.style.use("seaborn-v0_8-whitegrid")
     output_dir = Path(output_dir)
@@ -66,6 +67,11 @@ def make_figures(
         manifest["generation_quality"] = _diagnostics_figure(
             read_json(diagnostics_path), output_dir, formats
         )
+    if audit_path and Path(audit_path).exists():
+        audit = read_json(audit_path)
+        manifest["runtime_tradeoff"] = _runtime_figure(audit, output_dir, formats)
+        manifest["split_accuracy"] = _split_accuracy_figure(audit, output_dir, formats)
+        manifest["univariate_features"] = _univariate_auc_figure(audit, output_dir, formats)
     write_json(output_dir / "manifest.json", {"figures": manifest})
     return {"figures": manifest}
 
@@ -215,7 +221,7 @@ def _oracle_figure(report: dict, output_dir: Path, formats: list[str]) -> list[s
 
 
 def _diagnostics_figure(report: dict, output_dir: Path, formats: list[str]) -> list[str]:
-    labels = ["Hit token cap", "Explicit #### answer", "No numeric answer"]
+    labels = ["Hit token cap", "Explicit final answer", "No numeric answer"]
     fp = [report["fp"]["hit_max_new_tokens_rate"], report["fp"]["explicit_answer_rate"], report["fp"]["no_numeric_answer_rate"]]
     quant = [report["quant"]["hit_max_new_tokens_rate"], report["quant"]["explicit_answer_rate"], report["quant"]["no_numeric_answer_rate"]]
     x = np.arange(len(labels))
@@ -230,3 +236,65 @@ def _diagnostics_figure(report: dict, output_dir: Path, formats: list[str]) -> l
     axis.legend()
     fig.tight_layout()
     return _save(fig, output_dir, "07_generation_quality", formats)
+
+
+def _runtime_figure(audit: dict, output_dir: Path, formats: list[str]) -> list[str]:
+    generation = audit["test"]["generation"]
+    ratios = [
+        generation["token_inflation_ratio_quant_over_fp"],
+        generation["quant_latency_seconds"]["mean"] / generation["fp_latency_seconds"]["mean"],
+        generation["quant_tokens_per_second"]["mean"] / generation["fp_tokens_per_second"]["mean"],
+    ]
+    labels = ["Generated tokens", "Example latency", "Throughput"]
+    colors = [COLORS["quant"] if value > 1 else COLORS["good"] for value in ratios]
+    fig, axis = plt.subplots(figsize=(7, 4.2))
+    bars = axis.bar(labels, ratios, color=colors)
+    axis.axhline(1.0, color=COLORS["neutral"], linestyle="--", label="FP16 baseline")
+    axis.set_ylabel("BNB4 / FP16 ratio")
+    axis.set_title("Observed runtime trade-off on RTX 3090")
+    for bar, value in zip(bars, ratios):
+        axis.text(bar.get_x() + bar.get_width() / 2, value + 0.035, f"{value:.3f}×", ha="center")
+    axis.legend()
+    fig.tight_layout()
+    return _save(fig, output_dir, "08_runtime_tradeoff", formats)
+
+
+def _split_accuracy_figure(audit: dict, output_dir: Path, formats: list[str]) -> list[str]:
+    fp = [audit[split]["paired_accuracy"]["fp_accuracy"] for split in ("train", "test")]
+    quant = [audit[split]["paired_accuracy"]["quant_accuracy"] for split in ("train", "test")]
+    x = np.arange(2)
+    width = 0.36
+    fig, axis = plt.subplots(figsize=(6.5, 4.2))
+    axis.bar(x - width / 2, fp, width, label="FP16", color=COLORS["fp"])
+    axis.bar(x + width / 2, quant, width, label="BNB4", color=COLORS["quant"])
+    axis.set_xticks(x, ["GSM8K train", "GSM8K test"])
+    axis.set_ylim(0, 1)
+    axis.set_ylabel("Accuracy")
+    axis.set_title("Quantization degradation transfers across splits")
+    axis.legend()
+    fig.tight_layout()
+    return _save(fig, output_dir, "09_train_test_accuracy", formats)
+
+
+def _univariate_auc_figure(audit: dict, output_dir: Path, formats: list[str]) -> list[str]:
+    values = audit["test"]["univariate_failure_auc_fp_correct_only"]
+    preferred = [
+        "generation_tokens",
+        "max_entropy",
+        "min_logit_margin",
+        "mean_entropy",
+        "mean_token_probability",
+    ]
+    labels = [name.replace("_", " ").title() for name in preferred]
+    scores = [values[name] for name in preferred]
+    fig, axis = plt.subplots(figsize=(8, 4.4))
+    bars = axis.barh(labels, scores, color=COLORS["fp"])
+    axis.axvline(0.5, color=COLORS["neutral"], linestyle="--", label="Random")
+    axis.set_xlim(0.45, 0.75)
+    axis.set_xlabel("Univariate ranking AUC")
+    axis.set_title("Cheap signals separate quantization-induced failures")
+    for bar, value in zip(bars, scores):
+        axis.text(value + 0.005, bar.get_y() + bar.get_height() / 2, f"{value:.3f}", va="center")
+    axis.legend()
+    fig.tight_layout()
+    return _save(fig, output_dir, "10_univariate_feature_auc", formats)

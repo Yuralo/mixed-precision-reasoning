@@ -150,22 +150,74 @@ python -m scripts.train_predictor \
   --predictions runs/gsm8k_test/predictor_predictions_clean.parquet
 ```
 
-### Stage 1 decision gate
+## Stage 2 — artifact-only trajectory and utility analysis (complete)
 
-Continue if most of the following hold on the locked test split:
+These commands reuse the existing 800 paired generations:
 
-- ROC-AUC is at least 0.70 and PR-AUC clearly exceeds positive prevalence.
-- The learned controller beats entropy at a 10% intervention budget.
-- Net end-to-end accuracy improves after harmful FP interventions are counted.
-- The signal remains after excluding malformed/truncated generations.
+```bash
+python -m scripts.analyze_existing_runs
+python -m scripts.train_utility_controller
+python -m scripts.run_prefix_prediction
+python -m scripts.plot_trajectory_analysis
+python -m scripts.plot_control_analysis
+python -m scripts.generate_decision_memo
+```
 
-## Stage 2 — precision dose response
+Observed gate result: the paired precision effect survives, but the learned signed-
+utility router does not beat entropy at 10%, and 16/32-token prefix prediction is
+weak. This blocks token-level systems work for now.
 
-Run BNB8 on the same train/test examples. Reuse the existing FP outputs; do not rerun
-them. Compare BNB8 and BNB4 induced-failure rates, predictability, and oracle upside.
-This tests whether sensitivity scales coherently with quantization severity.
+## Stage 3 — precision versus temperature (next RTX 3090 run)
 
-## Stage 3 — model replication
+Start with 100 test prompts, two temperatures, and three samples. This is 600 FP16
+completions. It is intentionally smaller than the paired run because the immediate
+question is success-set overlap, not a final leaderboard number.
 
-Only if Stage 1 succeeds, repeat 200 train + 200 test examples with
-Qwen2.5-3B-Instruct. Do not move to A40/A100 yet.
+```bash
+python -m scripts.run_temperature_baseline \
+  --model Qwen/Qwen2.5-1.5B-Instruct \
+  --device cuda --dtype fp16 \
+  --dataset-split test --offset 0 --limit 100 \
+  --temperatures 0.3,0.7 --samples 3 \
+  --max-new-tokens 512 --checkpoint-every 20 --log-every 1
+
+python -m scripts.analyze_temperature_experiment
+python -m scripts.plot_temperature_analysis
+python -m scripts.generate_decision_memo
+```
+
+Inspect:
+
+- fraction of deterministic BNB4 rescues reproduced by any FP16 sample;
+- Jaccard overlap between BNB4 and temperature rescue sets;
+- per-completion, pass-at-3, and majority-vote accuracy;
+- generated length and answer diversity.
+
+Precision-specific evidence is stronger if BNB4 rescues have low overlap with FP16
+temperature rescues and retain a distinct trajectory signature. High overlap weakens
+the control-variable claim.
+
+## Stage 4 — one independent replication
+
+Run only after inspecting Stage 3. Prefer one of:
+
+1. a small MATH subset with the same Qwen2.5-1.5B model; or
+2. Qwen2.5-3B-Instruct on 200 GSM8K examples; or
+3. BNB8/AWQ/GPTQ on the same 200 examples for a quantizer/precision dose response.
+
+The preferred scientific replication is a new dataset. A second GSM8K slice is not
+independent enough. Stay on the 3090 unless the chosen model genuinely does not fit.
+
+## Current decision gate
+
+- **Continue strongly** only if temperature does not reproduce the precision effect,
+  independent replication preserves two-way success-set churn, oracle routing stays
+  materially above both static modes, and routing/abstention becomes useful.
+- **Continue narrowly** if the paired phenomenon replicates but learned control stays
+  weak. Frame the work as an empirical trajectory study.
+- **Pivot** if BNB4 rescues are mostly extraction/truncation artifacts, temperature
+  reproduces them, or complementarity collapses in replication.
+
+Do not implement custom CUDA, layer switching, or large A100 sweeps before these
+gates. The generated [`results/DECISION_MEMO.md`](results/DECISION_MEMO.md) records
+the current recommendation.

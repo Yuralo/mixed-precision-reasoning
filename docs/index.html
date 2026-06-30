@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Research report on numerical precision as a reasoning control variable">
+  <title>Precision as a Control Variable for Reasoning — Research Report</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero" id="top">
+    <nav>
+      <a class="brand" href="#top">TMP</a>
+      <div class="nav-links">
+        <a href="#question">Question</a>
+        <a href="#system">System</a>
+        <a href="#results">Results</a>
+        <a href="#novelty">Novelty</a>
+        <a href="#figures">Figures</a>
+        <a href="#next">Next</a>
+      </div>
+    </nav>
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">Thesis research MVP · Evidence-gated report</p>
+        <h1>Precision as a<br><span>Control Variable</span></h1>
+        <p class="lede">Does numerical precision alter reasoning trajectories in a way that is distinct from ordinary decoding randomness—and can those changes be predicted or exploited?</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#results">See the evidence</a>
+          <a class="button" href="../EXPERIMENT_PLAN.md">Experiment plan</a>
+          <a class="button" href="PROJECT_GUIDE.md">Project guide</a>
+          <a class="button" href="../results/DECISION_MEMO.md">Decision memo</a>
+        </div>
+      </div>
+      <div class="signal-card" aria-label="Current research signal">
+        <p class="card-label">Current signal</p>
+        <div class="signal-number">77.25%</div>
+        <p>best possible selector accuracy on 400 held-out test examples, versus 63% BNB4 and 69% FP16.</p>
+        <div class="signal-row"><span>Useful FP interventions</span><strong>57 / 400</strong></div>
+        <div class="signal-row"><span>Required oracle budget</span><strong>14.25%</strong></div>
+        <p class="warning">Decision: continue, but narrow scope. The oracle demonstrates opportunity; the learned controller has not captured it.</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="question">
+      <div class="section-heading">
+        <p class="eyebrow">01 · Research question</p>
+        <h2>Precision changes success sets—but “control” is still a hypothesis.</h2>
+      </div>
+      <div class="two-column">
+        <div>
+          <p class="large-copy">FP16 and BNB4 solve overlapping but non-identical subsets. The new question is whether this is a precision-specific trajectory effect or merely another form of decoding noise.</p>
+          <p>A valid control-variable thesis requires a negative temperature-equivalence result, independent replication, and utility-aware routing that accounts for harmful FP switches.</p>
+        </div>
+        <ol class="research-questions">
+          <li><span>1</span>How does precision change reasoning trajectories?</li>
+          <li><span>2</span>Is the effect distinct from temperature sampling?</li>
+          <li><span>3</span>Can we predict beneficial versus harmful switches?</li>
+          <li><span>4</span>Do early signals justify token-time intervention?</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="system" class="tinted">
+      <div class="section-heading">
+        <p class="eyebrow">02 · Implemented system</p>
+        <h2>One matched pipeline, from generation to intervention.</h2>
+      </div>
+      <div class="pipeline" aria-label="Experiment pipeline">
+        <div class="pipeline-step"><span>01</span><strong>Matched generation</strong><small>FP16 and BNB4, greedy decoding</small></div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step"><span>02</span><strong>Failure labels</strong><small>FP/Q correctness and answer churn</small></div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step"><span>03</span><strong>Runtime signals</strong><small>Entropy, margin, probability, length</small></div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step"><span>04</span><strong>Controller</strong><small>Logistic regression and random forest</small></div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step"><span>05</span><strong>Recovery</strong><small>Accuracy versus FP intervention budget</small></div>
+      </div>
+      <div class="capability-grid">
+        <article><h3>Reproducible evaluation</h3><p>Deterministic decoding, fixed seeds, matched prompts, checkpoints, progress logs, and JSONL artifacts.</p></article>
+        <article><h3>Portable quantization</h3><p>Mac fake-weight quantization for plumbing and CUDA bitsandbytes 4/8-bit execution on the RTX 3090.</p></article>
+        <article><h3>Token telemetry</h3><p>Per-token entropy, top-token probability, surprisal, and top-1/top-2 logit margin.</p></article>
+        <article><h3>Scientific safeguards</h3><p>Strict answer parsing, truncation diagnostics, held-out evaluation, harmful-intervention accounting, and bootstrap intervals.</p></article>
+      </div>
+    </section>
+
+    <section id="results">
+      <div class="section-heading">
+        <p class="eyebrow">03 · Evidence so far</p>
+        <h2>Held-out evidence supports trajectory shift, not yet controllability.</h2>
+      </div>
+
+      <div class="callout caution">
+        <strong>Audit status:</strong> the Stage 1 dataset contains 400 aligned train pairs and 400 aligned held-out test pairs with no duplicate IDs, reference mismatches, or extraction drift. The earlier 200-example run remains exploratory and is stored separately under <code>runs/first/</code>.
+      </div>
+      <div class="callout caution"><strong>Current verdict:</strong> continue for one focused evidence sprint, with framing C: <em>Empirical Study of Quantization-Induced Reasoning Trajectory Shifts</em>. “Precision as a Control Variable” is not yet established.</div>
+
+      <h3 class="subheading">Stage 1 · 400 held-out GSM8K test examples · RTX 3090</h3>
+      <div class="metric-grid">
+        <div class="metric"><span>FP16 accuracy</span><strong>69.0%</strong></div>
+        <div class="metric"><span>BNB4 accuracy</span><strong>63.0%</strong></div>
+        <div class="metric"><span>Answer flip rate</span><strong>38.75%</strong></div>
+        <div class="metric accent"><span>Best selector</span><strong>77.25%</strong></div>
+      </div>
+
+      <div class="chart-grid">
+        <article class="chart-card">
+          <div class="chart-title"><div><p class="card-label">Correctness categories</p><h3>Quantization has net harmful churn</h3></div><span>n=400</span></div>
+          <div class="bar-list">
+            <div><span>Both correct</span><div class="track"><i style="width:54.75%; background:#2eb8a3"></i></div><strong>219</strong></div>
+            <div><span>FP only</span><div class="track"><i style="width:14.25%; background:#ff6b6b"></i></div><strong>57</strong></div>
+            <div><span>Quant only</span><div class="track"><i style="width:8.25%; background:#7aa2f7"></i></div><strong>33</strong></div>
+            <div><span>Both wrong</span><div class="track"><i style="width:22.75%; background:#697386"></i></div><strong>91</strong></div>
+          </div>
+        </article>
+
+        <article class="chart-card">
+          <div class="chart-title"><div><p class="card-label">Corrected oracle</p><h3>Accuracy recovery</h3></div><span>up to budget</span></div>
+          <svg class="line-chart" viewBox="0 0 600 300" role="img" aria-label="Oracle recovery from 63 to 77.25 percent">
+            <g class="grid-lines"><line x1="55" y1="240" x2="570" y2="240"/><line x1="55" y1="155" x2="570" y2="155"/><line x1="55" y1="70" x2="570" y2="70"/></g>
+            <g class="axis-labels"><text x="20" y="245">60%</text><text x="20" y="160">70%</text><text x="20" y="75">80%</text><text x="52" y="275">0</text><text x="305" y="275">50</text><text x="552" y="275">100%</text></g>
+            <polyline class="oracle-line" points="55,215 81,172 107,130 158,94 313,94 570,94"/>
+            <g class="points"><circle cx="55" cy="215" r="5"/><circle cx="81" cy="172" r="5"/><circle cx="107" cy="130" r="5"/><circle cx="158" cy="94" r="5"/><circle cx="313" cy="94" r="5"/><circle cx="570" cy="94" r="5"/></g>
+          </svg>
+          <p class="chart-note">The useful oracle saturates after 57 interventions—14.25% of examples.</p>
+        </article>
+      </div>
+
+      <h3 class="subheading">Sensitivity predictor · trained on GSM8K train, evaluated on held-out test</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Method</th><th>ROC-AUC</th><th>PR-AUC</th><th>Recall @10%</th><th>Precision @10%</th></tr></thead>
+          <tbody>
+            <tr class="highlight"><td>Logistic regression</td><td>0.804</td><td>0.608</td><td>0.351</td><td>0.714</td></tr>
+            <tr><td>Random forest</td><td>0.762</td><td>0.519</td><td>0.298</td><td>0.607</td></tr>
+            <tr><td>Entropy threshold</td><td>0.693</td><td>0.427</td><td>0.281</td><td>0.571</td></tr>
+            <tr><td>Logit-margin threshold</td><td>0.669</td><td>0.319</td><td>0.228</td><td>0.464</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fine-print">The eligible held-out evaluation contains 276 FP-correct examples and 57 quantization-induced failures. Logistic ROC-AUC 95% bootstrap CI: 0.730–0.867; PR-AUC CI: 0.486–0.731.</p>
+
+      <h3 class="subheading">Strict clean subset · both models explicit and non-truncated</h3>
+      <div class="pilot-layout">
+        <div class="quality-bars">
+          <div class="quality-head"><span>Metric</span><span>FP16</span><span>BNB4</span></div>
+          <div><span>Explicit final answer</span><strong>85.5%</strong><strong>92.5%</strong></div>
+          <div><span>Hit token ceiling</span><strong>1.75%</strong><strong>4.0%</strong></div>
+          <div><span>Clean-subset accuracy</span><strong>71.69%</strong><strong>64.92%</strong></div>
+          <div><span>Clean FP-only / Q-only</span><strong>47</strong><strong>25</strong></div>
+        </div>
+        <div class="pilot-summary">
+          <p class="card-label">Clean matched subset</p>
+          <strong>325 examples</strong>
+          <p>The paired gap remains 6.77 points after strict filtering, with McNemar p=0.0128. The quantization effect is therefore not explained by token caps or answer formatting.</p>
+        </div>
+      </div>
+
+      <h3 class="subheading">Controller utility and runtime reality</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Policy</th><th>5% budget</th><th>10% budget</th><th>20% budget</th><th>50% budget</th></tr></thead>
+          <tbody>
+            <tr><td>Entropy threshold</td><td>64.25%</td><td class="highlight">66.00%</td><td>66.25%</td><td>68.25%</td></tr>
+            <tr><td>Best signed-utility model</td><td>64.75%</td><td>65.50%</td><td>66.50%</td><td>—</td></tr>
+            <tr><td>Oracle</td><td>68.00%</td><td>73.00%</td><td>77.25%</td><td>77.25%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout caution"><strong>Efficiency caveat:</strong> bitsandbytes BNB4 reached 36.64 tokens/s versus 54.09 tokens/s for FP16, generated 8.08% more tokens, and took 4.50 s versus 2.82 s per test example. No peak-memory measurements were logged. The present result supports memory compression and risk prediction, not latency savings.</div>
+
+      <h3 class="subheading">Early-token feasibility</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Observed BNB4 prefix</th><th>Best beneficial ROC-AUC</th><th>10% routing accuracy</th><th>Reading</th></tr></thead>
+          <tbody>
+            <tr><td>16 tokens</td><td>0.502</td><td>64.0%</td><td>Chance-level detection</td></tr>
+            <tr><td>32 tokens</td><td>0.572</td><td>64.75%</td><td>Weak signal</td></tr>
+            <tr><td>64 tokens</td><td>0.639</td><td>64.75%</td><td>Moderate ranking, poor utility</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="subheading">Focused study: does BNB4 generate longer reasoning traces?</h3>
+      <div class="pilot-layout">
+        <div class="quality-bars">
+          <div class="quality-head"><span>Paired group</span><span>Mean delta</span><span>BNB4 longer</span></div>
+          <div><span>All 400 examples</span><strong>+12.35</strong><strong>59.8%</strong></div>
+          <div><span>Both correct</span><strong>+7.93</strong><strong>61.6%</strong></div>
+          <div><span>BNB4 rescues FP16</span><strong>+18.61</strong><strong>63.6%</strong></div>
+          <div><span>BNB4 corrupts FP16</span><strong>+15.54</strong><strong>50.9%</strong></div>
+        </div>
+        <div class="pilot-summary">
+          <p class="card-label">Clean-subset contrast</p>
+          <strong>+36.02 tokens</strong>
+          <p>Clean BNB4 rescues average +21.72 tokens relative to FP16; clean BNB4 failures average −14.30. Their difference has a bootstrap 95% interval of +2.73 to +67.56. This is an exploratory deliberation-versus-premature-commitment hypothesis, not proof that longer text is better reasoning.</p>
+          <p><a href="TOKEN_LENGTH_STUDY.md">Read the complete token-length study →</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="figures" class="tinted">
+      <div class="section-heading">
+        <p class="eyebrow">04 · Generated figure gallery</p>
+        <h2>Figures update from saved run artifacts.</h2>
+        <p>Run <code>python -m scripts.make_figures</code>. Missing figures display a placeholder until the relevant experiment is complete.</p>
+      </div>
+      <div class="figure-gallery">
+        <figure><img src="../runs/gsm8k_test/figures/01_accuracy_and_outcomes.png" alt="Accuracy and correctness outcomes"><figcaption>Static accuracy and correctness churn</figcaption></figure>
+        <figure><img src="../runs/gsm8k_test/figures/02_uncertainty_distributions.png" alt="Uncertainty feature distributions"><figcaption>Uncertainty distributions by failure status</figcaption></figure>
+        <figure><img src="../runs/gsm8k_test/figures/03_failure_probability_vs_entropy.png" alt="Failure probability versus entropy"><figcaption>Failure concentration versus entropy</figcaption></figure>
+        <figure><img src="../runs/gsm8k_test/figures/04_predictor_metrics.png" alt="Predictor AUC metrics"><figcaption>Predictor and baseline metrics with bootstrap intervals</figcaption></figure>
+        <figure><img src="../runs/gsm8k_test/figures/05_controller_accuracy_vs_budget.png" alt="Controller accuracy versus budget"><figcaption>Net controller utility across all examples</figcaption></figure>
+        <figure><img src="../runs/gsm8k_test/figures/06_oracle_recovery.png" alt="Oracle recovery curve"><figcaption>Corrected example-level oracle recovery</figcaption></figure>
+        <figure><img src="../runs/gsm8k_test/figures/07_generation_quality.png" alt="Generation quality diagnostics"><figcaption>Truncation and answer-quality diagnostics</figcaption></figure>
+        <figure><img src="../runs/gsm8k_test/figures/08_runtime_tradeoff.png" alt="BNB4 runtime ratios versus FP16"><figcaption>Observed RTX 3090 runtime and token trade-off</figcaption></figure>
+        <figure><img src="../runs/gsm8k_test/figures/09_train_test_accuracy.png" alt="FP16 and BNB4 train and test accuracy"><figcaption>Accuracy degradation across official splits</figcaption></figure>
+        <figure><img src="../runs/gsm8k_test/figures/10_univariate_feature_auc.png" alt="Univariate feature AUC"><figcaption>Individual cheap-signal predictiveness</figcaption></figure>
+        <figure><img src="../runs/gsm8k_test/figures/11_token_length_by_outcome.png" alt="Paired token length by correctness outcome"><figcaption>BNB4 versus FP16 generation length by outcome</figcaption></figure>
+        <figure><img src="../runs/gsm8k_test/figures/12_clean_token_delta.png" alt="Clean paired token deltas with confidence intervals"><figcaption>Clean rescues lengthen while induced failures shorten</figcaption></figure>
+        <figure><img src="../results/figures/trajectory_structure_deltas.png" alt="Trajectory structure differences"><figcaption>Length shifts do not automatically imply more calculations</figcaption></figure>
+        <figure><img src="../results/figures/entropy_trajectories.png" alt="FP16 and BNB4 entropy trajectories"><figcaption>Entropy trajectories by paired correctness outcome</figcaption></figure>
+        <figure><img src="../results/figures/first_divergence_histogram.png" alt="First divergence positions"><figcaption>Independent traces often diverge before substantive reasoning</figcaption></figure>
+        <figure><img src="../results/figures/utility_routing_curve.png" alt="Signed utility routing curve"><figcaption>Learned routing leaves most oracle opportunity unrealized</figcaption></figure>
+        <figure><img src="../results/figures/utility_calibration.png" alt="Controller calibration"><figcaption>Calibration of predicted beneficial FP switches</figcaption></figure>
+        <figure><img src="../results/figures/utility_risk_coverage.png" alt="Controller risk coverage curve"><figcaption>Selective risk and accuracy under abstention</figcaption></figure>
+        <figure><img src="../results/figures/prefix_prediction.png" alt="Prefix prediction performance"><figcaption>Early routing signal emerges too late and remains weak</figcaption></figure>
+      </div>
+    </section>
+
+    <section id="lessons">
+      <div class="section-heading"><p class="eyebrow">05 · What we learned</p><h2>The evaluator is part of the experiment.</h2></div>
+      <div class="lesson-grid">
+        <article><span>01</span><h3>Aggregate accuracy hides churn.</h3><p>FP16 and BNB4 can have identical accuracy while succeeding on different examples. Adaptive precision should optimize counterfactual utility, not simply imitate FP.</p></article>
+        <article><span>02</span><h3>Interventions can be harmful.</h3><p>FP correct/Q wrong cases add accuracy, but FP wrong/Q correct cases remove it. Controller evaluation now counts both.</p></article>
+        <article><span>03</span><h3>Formatting can masquerade as reasoning.</h3><p>Token caps and fallback-to-last-number extraction contaminated the first run. The revised prompt, parser, and stop conditions target this directly.</p></article>
+        <article><span>04</span><h3>Small AUCs need humility.</h3><p>The first predictor had only five positive test failures. Held-out evaluation and bootstrap intervals are now mandatory.</p></article>
+      </div>
+    </section>
+
+    <section id="novelty" class="tinted">
+      <div class="section-heading">
+        <p class="eyebrow">06 · Novelty assessment</p>
+        <h2>The broad idea is not novel. A narrower contribution may be.</h2>
+        <p>As of June 2026, multiple papers already perform dynamic mixed-precision LLM inference or selective high-precision recovery. The thesis must be positioned around correctness-risk and counterfactual intervention utility, not around “dynamic precision” alone.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Closest work</th><th>Overlap</th><th>Remaining distinction</th></tr></thead>
+          <tbody>
+            <tr><td><a href="https://arxiv.org/abs/2506.12024">FlexQuant (2025)</a></td><td>Per-token/layer switching using entropy, KL, and top-logit tolerance</td><td>Optimizes token fidelity and speed, not paired reasoning correctness utility or harmful fallback</td></tr>
+            <tr><td><a href="https://arxiv.org/abs/2508.06041">DP-LLM (2025)</a></td><td>Runtime layer-wise bit selection from lightweight input-error estimates</td><td>Targets precision/latency adaptation rather than calibrated critical-error prediction</td></tr>
+            <tr><td><a href="https://arxiv.org/abs/2505.11574">Quantization Meets Reasoning (2025)</a></td><td>Localizes early reasoning failures and restores local token margins</td><td>Uses curated fine-tuning rather than an online intervention/abstention policy</td></tr>
+            <tr><td><a href="https://arxiv.org/abs/2606.02011">Extreme Low-Bit Inference (2026)</a></td><td>Detects generation pathologies and selectively falls back to FP16</td><td>Focuses on 2-bit loops and planning; our proposed target is general correctness risk at modest 4-bit precision</td></tr>
+            <tr><td><a href="https://arxiv.org/abs/2606.15682">ReQAT (2026)</a></td><td>Finds reasoning failures at critical low-entropy symbolic commitments</td><td>Training-based W4A4KV4 recovery; our evidence is quant-only risk prediction for W4A16</td></tr>
+            <tr><td><a href="https://arxiv.org/abs/2606.25519">Quantization Inflates Reasoning (2026)</a></td><td>Shows quantization increases reasoning-token usage and serving cost</td><td>Our 1.081× token inflation is a small-model replication, not a novel claim</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout caution"><strong>Defensible thesis direction:</strong> predict the signed counterfactual value of a precision intervention—beneficial, neutral, or harmful—from quantized-only signals, then optimize risk–coverage–cost with optional abstention. The signed controller is now implemented, but entropy still wins at the 10% end-to-end budget; this is a current negative result, not a solved contribution.</div>
+      <p class="fine-print">This is a scoped literature assessment, not proof of priority. Read the <a href="PROJECT_GUIDE.md">from-scratch project guide</a> and <a href="RESULTS_AUDIT.md">full statistical and novelty audit</a>.</p>
+    </section>
+
+    <section id="next" class="next-section">
+      <div>
+        <p class="eyebrow">07 · Next experiment</p>
+        <h2>Run the decisive temperature control.</h2>
+        <p>The signed utility controller and prefix test are complete and weak. Next run 100 prompts at FP16 temperatures 0.3 and 0.7 with three samples each, measure rescue-set overlap with deterministic BNB4, then perform one independent model or dataset replication.</p>
+      </div>
+      <div class="decision-list">
+        <h3>Current gate status:</h3>
+        <label><span>✓</span> Paired precision effect survives clean filtering</label>
+        <label><span>✓</span> FP16-only and BNB4-only wins replicate across splits</label>
+        <label><span>×</span> Learned controller beats entropy at 10%</label>
+        <label><span>×</span> Early prefix routing is practically useful</label>
+        <label><span>?</span> Precision is distinct from temperature</label>
+        <label><span>?</span> Effect replicates on another setting</label>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p><strong>Precision as a Control Variable for Reasoning</strong> · Evidence-gated research MVP</p>
+    <p>Report snapshot: 30 June 2026 · <a href="../README.md">Repository guide</a> · <a href="../EXPERIMENT_PLAN.md">Experiment plan</a></p>
+  </footer>
+  <script src="report.js"></script>
+</body>
+</html>

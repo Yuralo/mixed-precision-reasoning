@@ -1,0 +1,652 @@
+{
+  "num_examples": 400,
+  "clean_examples": 332,
+  "outcome_counts": {
+    "fp_correct_q_correct": 268,
+    "fp_correct_q_wrong": 57,
+    "fp_wrong_q_correct": 22,
+    "fp_wrong_q_wrong": 53
+  },
+  "groups": {
+    "fp_correct_q_correct": {
+      "n": 268,
+      "clean_n": 229,
+      "metrics": {
+        "delta_generated_tokens": {
+          "n": 268,
+          "mean": 10.73134328358209,
+          "median": 13.5
+        },
+        "delta_line_count": {
+          "n": 268,
+          "mean": 0.22014925373134328,
+          "median": 0.0
+        },
+        "delta_sentence_count": {
+          "n": 268,
+          "mean": 2.578358208955224,
+          "median": 3.0
+        },
+        "delta_numbered_step_count": {
+          "n": 268,
+          "mean": 2.6082089552238807,
+          "median": 3.0
+        },
+        "delta_arithmetic_expression_count": {
+          "n": 268,
+          "mean": -0.23134328358208955,
+          "median": 0.0
+        },
+        "delta_numeric_value_count": {
+          "n": 268,
+          "mean": 3.462686567164179,
+          "median": 3.0
+        },
+        "delta_self_correction_count": {
+          "n": 268,
+          "mean": 0.0,
+          "median": 0.0
+        },
+        "delta_repetition_score_4gram": {
+          "n": 268,
+          "mean": 0.002196280117603644,
+          "median": 0.0
+        },
+        "delta_normalized_final_answer_position": {
+          "n": 230,
+          "mean": 0.007889116245087695,
+          "median": 0.005432677844259437
+        },
+        "first_divergence_position": {
+          "n": 267,
+          "mean": 7.0411985018726595,
+          "median": 0.0
+        },
+        "normalized_first_divergence": {
+          "n": 267,
+          "mean": 0.05438518895372651,
+          "median": 0.0
+        },
+        "fp_entropy_at_divergence": {
+          "n": 267,
+          "mean": 1.8402192681916199,
+          "median": 1.9029213190078735
+        },
+        "quant_entropy_at_divergence": {
+          "n": 267,
+          "mean": 1.8052248666795452,
+          "median": 1.851032018661499
+        },
+        "fp_margin_at_divergence": {
+          "n": 267,
+          "mean": 0.6842228464419475,
+          "median": 0.53125
+        },
+        "quant_margin_at_divergence": {
+          "n": 267,
+          "mean": 1.104751872659176,
+          "median": 0.96875
+        }
+      },
+      "clean_metrics": {
+        "delta_generated_tokens": {
+          "n": 229,
+          "mean": 10.79475982532751,
+          "median": 13.0
+        },
+        "delta_line_count": {
+          "n": 229,
+          "mean": 0.24890829694323144,
+          "median": 0.0
+        },
+        "delta_sentence_count": {
+          "n": 229,
+          "mean": 2.4366812227074237,
+          "median": 3.0
+        },
+        "delta_numbered_step_count": {
+          "n": 229,
+          "mean": 2.445414847161572,
+          "median": 2.0
+        },
+        "delta_arithmetic_expression_count": {
+          "n": 229,
+          "mean": -0.2445414847161572,
+          "median": 0.0
+        },
+        "delta_numeric_value_count": {
+          "n": 229,
+          "mean": 3.3842794759825328,
+          "median": 3.0
+        },
+        "delta_self_correction_count": {
+          "n": 229,
+          "mean": 0.0,
+          "median": 0.0
+        },
+        "delta_repetition_score_4gram": {
+          "n": 229,
+          "mean": -0.0003330726787789045,
+          "median": 0.0
+        },
+        "delta_normalized_final_answer_position": {
+          "n": 229,
+          "mean": 0.007892888358455226,
+          "median": 0.005321507760532085
+        },
+        "first_divergence_position": {
+          "n": 228,
+          "mean": 7.942982456140351,
+          "median": 0.0
+        },
+        "normalized_first_divergence": {
+          "n": 228,
+          "mean": 0.061189288234924595,
+          "median": 0.0
+        },
+        "fp_entropy_at_divergence": {
+          "n": 228,
+          "mean": 1.8287964489376336,
+          "median": 1.90602046251297
+        },
+        "quant_entropy_at_divergence": {
+          "n": 228,
+          "mean": 1.7935987880878281,
+          "median": 1.853744924068451
+        },
+        "fp_margin_at_divergence": {
+          "n": 228,
+          "mean": 0.6826343201754386,
+          "median": 0.5625
+        },
+        "quant_margin_at_divergence": {
+          "n": 228,
+          "mean": 1.074766995614035,
+          "median": 0.921875
+        }
+      },
+      "divergence_before_arithmetic_rate": 0.9775280898876404,
+      "divergence_before_final_marker_rate": 1.0
+    },
+    "fp_correct_q_wrong": {
+      "n": 57,
+      "clean_n": 43,
+      "metrics": {
+        "delta_generated_tokens": {
+          "n": 57,
+          "mean": -4.7894736842105265,
+          "median": -5.0
+        },
+        "delta_line_count": {
+          "n": 57,
+          "mean": -0.8771929824561403,
+          "median": 0.0
+        },
+        "delta_sentence_count": {
+          "n": 57,
+          "mean": 1.2982456140350878,
+          "median": 1.0
+        },
+        "delta_numbered_step_count": {
+          "n": 57,
+          "mean": 1.3157894736842106,
+          "median": 1.0
+        },
+        "delta_arithmetic_expression_count": {
+          "n": 57,
+          "mean": -0.3157894736842105,
+          "median": 0.0
+        },
+        "delta_numeric_value_count": {
+          "n": 57,
+          "mean": 0.7192982456140351,
+          "median": 1.0
+        },
+        "delta_self_correction_count": {
+          "n": 57,
+          "mean": 0.03508771929824561,
+          "median": 0.0
+        },
+        "delta_repetition_score_4gram": {
+          "n": 57,
+          "mean": 0.01785077421801223,
+          "median": 0.002370178840767078
+        },
+        "delta_normalized_final_answer_position": {
+          "n": 46,
+          "mean": -0.000933506366022837,
+          "median": 0.0017677328644039592
+        },
+        "first_divergence_position": {
+          "n": 57,
+          "mean": 4.631578947368421,
+          "median": 0.0
+        },
+        "normalized_first_divergence": {
+          "n": 57,
+          "mean": 0.039593642681408095,
+          "median": 0.0
+        },
+        "fp_entropy_at_divergence": {
+          "n": 57,
+          "mean": 1.8929317551746703,
+          "median": 1.9358396530151367
+        },
+        "quant_entropy_at_divergence": {
+          "n": 57,
+          "mean": 1.7754835193617302,
+          "median": 1.734291672706604
+        },
+        "fp_margin_at_divergence": {
+          "n": 57,
+          "mean": 0.5827850877192983,
+          "median": 0.53125
+        },
+        "quant_margin_at_divergence": {
+          "n": 57,
+          "mean": 1.0597587719298245,
+          "median": 0.9375
+        }
+      },
+      "clean_metrics": {
+        "delta_generated_tokens": {
+          "n": 43,
+          "mean": -11.418604651162791,
+          "median": -2.0
+        },
+        "delta_line_count": {
+          "n": 43,
+          "mean": -2.046511627906977,
+          "median": 0.0
+        },
+        "delta_sentence_count": {
+          "n": 43,
+          "mean": 0.046511627906976744,
+          "median": 1.0
+        },
+        "delta_numbered_step_count": {
+          "n": 43,
+          "mean": 1.0930232558139534,
+          "median": 2.0
+        },
+        "delta_arithmetic_expression_count": {
+          "n": 43,
+          "mean": -0.16279069767441862,
+          "median": 0.0
+        },
+        "delta_numeric_value_count": {
+          "n": 43,
+          "mean": -0.046511627906976744,
+          "median": 0.0
+        },
+        "delta_self_correction_count": {
+          "n": 43,
+          "mean": 0.0,
+          "median": 0.0
+        },
+        "delta_repetition_score_4gram": {
+          "n": 43,
+          "mean": 0.02550675255081264,
+          "median": 0.011627906976744186
+        },
+        "delta_normalized_final_answer_position": {
+          "n": 43,
+          "mean": -0.00047755281896272187,
+          "median": 0.0020206351681480994
+        },
+        "first_divergence_position": {
+          "n": 43,
+          "mean": 3.953488372093023,
+          "median": 0.0
+        },
+        "normalized_first_divergence": {
+          "n": 43,
+          "mean": 0.028018690148765714,
+          "median": 0.0
+        },
+        "fp_entropy_at_divergence": {
+          "n": 43,
+          "mean": 1.9963506404743638,
+          "median": 2.079171895980835
+        },
+        "quant_entropy_at_divergence": {
+          "n": 43,
+          "mean": 1.8757689151653023,
+          "median": 1.854645013809204
+        },
+        "fp_margin_at_divergence": {
+          "n": 43,
+          "mean": 0.5196220930232558,
+          "median": 0.46875
+        },
+        "quant_margin_at_divergence": {
+          "n": 43,
+          "mean": 1.0145348837209303,
+          "median": 0.84375
+        }
+      },
+      "divergence_before_arithmetic_rate": 0.9824561403508771,
+      "divergence_before_final_marker_rate": 1.0
+    },
+    "fp_wrong_q_correct": {
+      "n": 22,
+      "clean_n": 18,
+      "metrics": {
+        "delta_generated_tokens": {
+          "n": 22,
+          "mean": -32.04545454545455,
+          "median": -30.5
+        },
+        "delta_line_count": {
+          "n": 22,
+          "mean": -2.4545454545454546,
+          "median": 0.0
+        },
+        "delta_sentence_count": {
+          "n": 22,
+          "mean": -0.3181818181818182,
+          "median": 1.0
+        },
+        "delta_numbered_step_count": {
+          "n": 22,
+          "mean": 1.8181818181818181,
+          "median": 1.0
+        },
+        "delta_arithmetic_expression_count": {
+          "n": 22,
+          "mean": -0.6818181818181818,
+          "median": -1.0
+        },
+        "delta_numeric_value_count": {
+          "n": 22,
+          "mean": 1.0909090909090908,
+          "median": -1.5
+        },
+        "delta_self_correction_count": {
+          "n": 22,
+          "mean": 0.0,
+          "median": 0.0
+        },
+        "delta_repetition_score_4gram": {
+          "n": 22,
+          "mean": -0.020303639078678493,
+          "median": -0.010317460317460319
+        },
+        "delta_normalized_final_answer_position": {
+          "n": 19,
+          "mean": 0.00035570509743165194,
+          "median": -0.004325348075348012
+        },
+        "first_divergence_position": {
+          "n": 22,
+          "mean": 6.409090909090909,
+          "median": 2.0
+        },
+        "normalized_first_divergence": {
+          "n": 22,
+          "mean": 0.05101723218299565,
+          "median": 0.013905654000289702
+        },
+        "fp_entropy_at_divergence": {
+          "n": 22,
+          "mean": 1.9493160247802734,
+          "median": 1.9967346787452698
+        },
+        "quant_entropy_at_divergence": {
+          "n": 22,
+          "mean": 1.8820762959393589,
+          "median": 1.8549786806106567
+        },
+        "fp_margin_at_divergence": {
+          "n": 22,
+          "mean": 0.5213068181818182,
+          "median": 0.3984375
+        },
+        "quant_margin_at_divergence": {
+          "n": 22,
+          "mean": 1.0149147727272727,
+          "median": 1.0078125
+        }
+      },
+      "clean_metrics": {
+        "delta_generated_tokens": {
+          "n": 18,
+          "mean": -32.5,
+          "median": -30.5
+        },
+        "delta_line_count": {
+          "n": 18,
+          "mean": -2.5,
+          "median": 0.0
+        },
+        "delta_sentence_count": {
+          "n": 18,
+          "mean": -0.7777777777777778,
+          "median": 0.5
+        },
+        "delta_numbered_step_count": {
+          "n": 18,
+          "mean": 1.6666666666666667,
+          "median": 0.5
+        },
+        "delta_arithmetic_expression_count": {
+          "n": 18,
+          "mean": -0.9444444444444444,
+          "median": -1.0
+        },
+        "delta_numeric_value_count": {
+          "n": 18,
+          "mean": -0.05555555555555555,
+          "median": -1.5
+        },
+        "delta_self_correction_count": {
+          "n": 18,
+          "mean": 0.0,
+          "median": 0.0
+        },
+        "delta_repetition_score_4gram": {
+          "n": 18,
+          "mean": -0.01835083116527837,
+          "median": -0.012421178517068926
+        },
+        "delta_normalized_final_answer_position": {
+          "n": 18,
+          "mean": -0.0005704288370058344,
+          "median": -0.005054791336570941
+        },
+        "first_divergence_position": {
+          "n": 18,
+          "mean": 6.722222222222222,
+          "median": 2.0
+        },
+        "normalized_first_divergence": {
+          "n": 18,
+          "mean": 0.05115170868764181,
+          "median": 0.013905654000289702
+        },
+        "fp_entropy_at_divergence": {
+          "n": 18,
+          "mean": 1.870262987083859,
+          "median": 1.883902668952942
+        },
+        "quant_entropy_at_divergence": {
+          "n": 18,
+          "mean": 1.82627452744378,
+          "median": 1.7359203696250916
+        },
+        "fp_margin_at_divergence": {
+          "n": 18,
+          "mean": 0.5338541666666666,
+          "median": 0.3984375
+        },
+        "quant_margin_at_divergence": {
+          "n": 18,
+          "mean": 1.0876736111111112,
+          "median": 1.203125
+        }
+      },
+      "divergence_before_arithmetic_rate": 1.0,
+      "divergence_before_final_marker_rate": 1.0
+    },
+    "fp_wrong_q_wrong": {
+      "n": 53,
+      "clean_n": 42,
+      "metrics": {
+        "delta_generated_tokens": {
+          "n": 53,
+          "mean": 19.132075471698112,
+          "median": 7.0
+        },
+        "delta_line_count": {
+          "n": 53,
+          "mean": -0.9056603773584906,
+          "median": 0.0
+        },
+        "delta_sentence_count": {
+          "n": 53,
+          "mean": 2.0943396226415096,
+          "median": 2.0
+        },
+        "delta_numbered_step_count": {
+          "n": 53,
+          "mean": 2.3962264150943398,
+          "median": 2.0
+        },
+        "delta_arithmetic_expression_count": {
+          "n": 53,
+          "mean": -0.03773584905660377,
+          "median": 0.0
+        },
+        "delta_numeric_value_count": {
+          "n": 53,
+          "mean": 4.69811320754717,
+          "median": 1.0
+        },
+        "delta_self_correction_count": {
+          "n": 53,
+          "mean": -0.03773584905660377,
+          "median": 0.0
+        },
+        "delta_repetition_score_4gram": {
+          "n": 53,
+          "mean": 0.06125328065971278,
+          "median": 0.03390705679862307
+        },
+        "delta_normalized_final_answer_position": {
+          "n": 44,
+          "mean": 0.0014362357411591446,
+          "median": 0.0011169598419671911
+        },
+        "first_divergence_position": {
+          "n": 53,
+          "mean": 5.547169811320755,
+          "median": 0.0
+        },
+        "normalized_first_divergence": {
+          "n": 53,
+          "mean": 0.04606667541664625,
+          "median": 0.0
+        },
+        "fp_entropy_at_divergence": {
+          "n": 53,
+          "mean": 1.8937448994168695,
+          "median": 2.017888069152832
+        },
+        "quant_entropy_at_divergence": {
+          "n": 53,
+          "mean": 1.8871078176318474,
+          "median": 1.8658422231674194
+        },
+        "fp_margin_at_divergence": {
+          "n": 53,
+          "mean": 0.5975825471698113,
+          "median": 0.421875
+        },
+        "quant_margin_at_divergence": {
+          "n": 53,
+          "mean": 1.055129716981132,
+          "median": 1.109375
+        }
+      },
+      "clean_metrics": {
+        "delta_generated_tokens": {
+          "n": 42,
+          "mean": -5.9523809523809526,
+          "median": 7.0
+        },
+        "delta_line_count": {
+          "n": 42,
+          "mean": -2.0952380952380953,
+          "median": -1.0
+        },
+        "delta_sentence_count": {
+          "n": 42,
+          "mean": 0.42857142857142855,
+          "median": 1.5
+        },
+        "delta_numbered_step_count": {
+          "n": 42,
+          "mean": 1.6904761904761905,
+          "median": 2.0
+        },
+        "delta_arithmetic_expression_count": {
+          "n": 42,
+          "mean": -0.19047619047619047,
+          "median": 0.0
+        },
+        "delta_numeric_value_count": {
+          "n": 42,
+          "mean": 1.6904761904761905,
+          "median": 0.0
+        },
+        "delta_self_correction_count": {
+          "n": 42,
+          "mean": -0.047619047619047616,
+          "median": 0.0
+        },
+        "delta_repetition_score_4gram": {
+          "n": 42,
+          "mean": 0.02765616018975604,
+          "median": 0.018564768564768568
+        },
+        "delta_normalized_final_answer_position": {
+          "n": 42,
+          "mean": 0.0027317044372307054,
+          "median": 0.0011169598419671911
+        },
+        "first_divergence_position": {
+          "n": 42,
+          "mean": 6.214285714285714,
+          "median": 0.0
+        },
+        "normalized_first_divergence": {
+          "n": 42,
+          "mean": 0.050437895104639974,
+          "median": 0.0
+        },
+        "fp_entropy_at_divergence": {
+          "n": 42,
+          "mean": 1.8839916033404214,
+          "median": 2.0328099727630615
+        },
+        "quant_entropy_at_divergence": {
+          "n": 42,
+          "mean": 1.9000130792458851,
+          "median": 1.9065523147583008
+        },
+        "fp_margin_at_divergence": {
+          "n": 42,
+          "mean": 0.6421130952380952,
+          "median": 0.4453125
+        },
+        "quant_margin_at_divergence": {
+          "n": 42,
+          "mean": 1.0677083333333333,
+          "median": 1.0546875
+        }
+      },
+      "divergence_before_arithmetic_rate": 1.0,
+      "divergence_before_final_marker_rate": 1.0
+    }
+  }
+}

@@ -13,6 +13,7 @@ def main() -> None:
     parser.add_argument("--oracle", default="runs/oracle_recovery.json")
     parser.add_argument("--diagnostics", default="runs/diagnostics.json")
     parser.add_argument("--output-dir", default="runs/figures")
+    parser.add_argument("--audit", default="runs/research_audit.json")
     parser.add_argument("--formats", default="png,pdf")
     args = parser.parse_args()
     formats = [item.strip() for item in args.formats.split(",") if item.strip()]
@@ -24,6 +25,7 @@ def main() -> None:
         args.diagnostics,
         args.output_dir,
         formats,
+        args.audit,
     )
     print(report)
 

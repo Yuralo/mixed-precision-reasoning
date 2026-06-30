@@ -1,0 +1,11 @@
+{
+  "recommendation": "Continue, but narrow scope",
+  "framing": "C. Empirical Study of Quantization-Induced Reasoning Trajectory Shifts",
+  "temperature_control_complete": false,
+  "independent_replication_complete": false,
+  "learned_beats_entropy_at_10pct": false,
+  "learned_accuracy_at_10pct": 0.655,
+  "entropy_accuracy_at_10pct": 0.66,
+  "oracle_accuracy_at_10pct": 0.73,
+  "next_gate": "FP16 temperature baseline on 100 prompts, then one independent replication"
+}

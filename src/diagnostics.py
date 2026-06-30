@@ -52,6 +52,7 @@ def generation_diagnostics(
         gold = extract_answer(fp.get("reference", ""))
         if not fp_cap and not q_cap:
             both_not_truncated += 1
+        if not fp_cap and not q_cap and fp_hash is not None and q_hash is not None:
             clean_comparisons.append(
                 _comparison_row(example_id, fp_hash == gold, q_hash == gold, fp_hash, q_hash)
             )
@@ -67,7 +68,10 @@ def generation_diagnostics(
         "matched_examples": len(shared),
         "both_not_truncated_count": both_not_truncated,
         "both_explicit_answer_count": both_explicit,
+        "clean_strict_count": len(clean_comparisons),
         "strict_explicit_answer_summary": comparison_summary(strict_comparisons),
+        "clean_strict_summary": comparison_summary(clean_comparisons),
+        # Backward-compatible name retained for older report consumers.
         "nontruncated_strict_summary": comparison_summary(clean_comparisons),
     }
 

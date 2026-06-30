@@ -7,11 +7,9 @@ import random
 from pathlib import Path
 from typing import Any, Iterable
 
-import numpy as np
-import yaml
-
-
 def set_seed(seed: int) -> None:
+    import numpy as np
+
     random.seed(seed)
     np.random.seed(seed)
     try:
@@ -25,6 +23,8 @@ def set_seed(seed: int) -> None:
 
 
 def load_yaml(path: str | Path) -> dict[str, Any]:
+    import yaml
+
     with Path(path).open("r", encoding="utf-8") as handle:
         return yaml.safe_load(handle) or {}
 
