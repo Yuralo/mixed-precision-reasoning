@@ -28,7 +28,7 @@
       "harmful_roc_auc": 0.6215423994715549,
       "harmful_pr_auc": 0.12086500756102174,
       "beneficial_brier": 0.13889637282862258,
-      "beneficial_ece": 0.1161131875460345,
+      "beneficial_ece": 0.11611318754603445,
       "intervention_curve": [
         {
           "budget": 0.0,
@@ -73,12 +73,12 @@
           "budget": 0.2,
           "allowed_interventions": 80,
           "num_interventions": 80,
-          "accuracy": 0.6475,
-          "net_correctness_gain": 7,
-          "beneficial_selected": 9,
+          "accuracy": 0.645,
+          "net_correctness_gain": 6,
+          "beneficial_selected": 8,
           "harmful_selected": 2,
-          "beneficial_switch_precision": 0.1125,
-          "beneficial_switch_recall": 0.15789473684210525,
+          "beneficial_switch_precision": 0.1,
+          "beneficial_switch_recall": 0.14035087719298245,
           "harmful_switch_rate": 0.025,
           "avoided_harm_rate": 0.9393939393939394
         },
@@ -86,14 +86,14 @@
           "budget": 0.5,
           "allowed_interventions": 200,
           "num_interventions": 200,
-          "accuracy": 0.655,
-          "net_correctness_gain": 10,
+          "accuracy": 0.6575,
+          "net_correctness_gain": 11,
           "beneficial_selected": 20,
-          "harmful_selected": 10,
+          "harmful_selected": 9,
           "beneficial_switch_precision": 0.1,
           "beneficial_switch_recall": 0.3508771929824561,
-          "harmful_switch_rate": 0.05,
-          "avoided_harm_rate": 0.696969696969697
+          "harmful_switch_rate": 0.045,
+          "avoided_harm_rate": 0.7272727272727273
         },
         {
           "budget": 1.0,
@@ -118,8 +118,8 @@
         },
         {
           "coverage": 0.6,
-          "selective_accuracy": 0.7541666666666667,
-          "selective_risk": 0.24583333333333335,
+          "selective_accuracy": 0.7583333333333333,
+          "selective_risk": 0.2416666666666667,
           "abstention_rate": 0.4
         },
         {
@@ -159,8 +159,8 @@
       "beneficial_pr_auc": 0.12861462175068533,
       "harmful_roc_auc": 0.5649409627611264,
       "harmful_pr_auc": 0.10719489503857714,
-      "beneficial_brier": 0.17853954016471507,
-      "beneficial_ece": 0.18857167261529253,
+      "beneficial_brier": 0.17854095136477724,
+      "beneficial_ece": 0.18857533928195921,
       "intervention_curve": [
         {
           "budget": 0.0,
@@ -179,12 +179,12 @@
           "budget": 0.05,
           "allowed_interventions": 20,
           "num_interventions": 20,
-          "accuracy": 0.6225,
-          "net_correctness_gain": -3,
-          "beneficial_selected": 0,
+          "accuracy": 0.625,
+          "net_correctness_gain": -2,
+          "beneficial_selected": 1,
           "harmful_selected": 3,
-          "beneficial_switch_precision": 0.0,
-          "beneficial_switch_recall": 0.0,
+          "beneficial_switch_precision": 0.05,
+          "beneficial_switch_recall": 0.017543859649122806,
           "harmful_switch_rate": 0.15,
           "avoided_harm_rate": 0.9090909090909091
         },
@@ -218,12 +218,12 @@
           "budget": 0.5,
           "allowed_interventions": 200,
           "num_interventions": 200,
-          "accuracy": 0.655,
-          "net_correctness_gain": 10,
-          "beneficial_selected": 24,
+          "accuracy": 0.6575,
+          "net_correctness_gain": 11,
+          "beneficial_selected": 25,
           "harmful_selected": 14,
-          "beneficial_switch_precision": 0.12,
-          "beneficial_switch_recall": 0.42105263157894735,
+          "beneficial_switch_precision": 0.125,
+          "beneficial_switch_recall": 0.43859649122807015,
           "harmful_switch_rate": 0.07,
           "avoided_harm_rate": 0.5757575757575757
         },
@@ -262,8 +262,8 @@
         },
         {
           "coverage": 0.8,
-          "selective_accuracy": 0.64375,
-          "selective_risk": 0.35624999999999996,
+          "selective_accuracy": 0.640625,
+          "selective_risk": 0.359375,
           "abstention_rate": 0.19999999999999996
         },
         {
@@ -382,8 +382,8 @@
         },
         {
           "coverage": 0.6,
-          "selective_accuracy": 0.75,
-          "selective_risk": 0.25,
+          "selective_accuracy": 0.7458333333333333,
+          "selective_risk": 0.25416666666666665,
           "abstention_rate": 0.4
         },
         {
@@ -423,8 +423,8 @@
       "beneficial_pr_auc": 0.15040883771280406,
       "harmful_roc_auc": 0.4484353067459334,
       "harmful_pr_auc": 0.07680052150984838,
-      "beneficial_brier": 0.18596104631846017,
-      "beneficial_ece": 0.16554935577978463,
+      "beneficial_brier": 0.18597353710631329,
+      "beneficial_ece": 0.16555010145078033,
       "intervention_curve": [
         {
           "budget": 0.0,
@@ -567,8 +567,8 @@
       "beneficial_pr_auc": 0.19930805370703214,
       "harmful_roc_auc": 0.5429774585087936,
       "harmful_pr_auc": 0.09469892486875445,
-      "beneficial_brier": 0.138701488892682,
-      "beneficial_ece": 0.09813942075418713,
+      "beneficial_brier": 0.13870148889268308,
+      "beneficial_ece": 0.09813942075419073,
       "intervention_curve": [
         {
           "budget": 0.0,
@@ -706,13 +706,13 @@
         "quant_runtime_mean_token_probability",
         "quant_runtime_last_token_probability"
       ],
-      "outcome_accuracy": 0.54,
-      "beneficial_roc_auc": 0.6567439005677458,
-      "beneficial_pr_auc": 0.2449459535974983,
-      "harmful_roc_auc": 0.5846750887622822,
-      "harmful_pr_auc": 0.118039675087035,
-      "beneficial_brier": 0.1310008516349564,
-      "beneficial_ece": 0.09788728913487722,
+      "outcome_accuracy": 0.5375,
+      "beneficial_roc_auc": 0.6558743798271188,
+      "beneficial_pr_auc": 0.24371175248612392,
+      "harmful_roc_auc": 0.5840145322434152,
+      "harmful_pr_auc": 0.11785480700950374,
+      "beneficial_brier": 0.13114454169937503,
+      "beneficial_ece": 0.09812366354927002,
       "intervention_curve": [
         {
           "budget": 0.0,
@@ -782,14 +782,14 @@
         {
           "budget": 1.0,
           "allowed_interventions": 400,
-          "num_interventions": 276,
-          "accuracy": 0.685,
-          "net_correctness_gain": 22,
-          "beneficial_selected": 42,
+          "num_interventions": 275,
+          "accuracy": 0.6825,
+          "net_correctness_gain": 21,
+          "beneficial_selected": 41,
           "harmful_selected": 20,
-          "beneficial_switch_precision": 0.15217391304347827,
-          "beneficial_switch_recall": 0.7368421052631579,
-          "harmful_switch_rate": 0.07246376811594203,
+          "beneficial_switch_precision": 0.14909090909090908,
+          "beneficial_switch_recall": 0.7192982456140351,
+          "harmful_switch_rate": 0.07272727272727272,
           "avoided_harm_rate": 0.3939393939393939
         }
       ],
@@ -854,8 +854,8 @@
       "beneficial_pr_auc": 0.18363490144418876,
       "harmful_roc_auc": 0.5190322846998596,
       "harmful_pr_auc": 0.09596452473905212,
-      "beneficial_brier": 0.15069888191423617,
-      "beneficial_ece": 0.13392428587896268,
+      "beneficial_brier": 0.15069888191423256,
+      "beneficial_ece": 0.13392428587895577,
       "intervention_curve": [
         {
           "budget": 0.0,
@@ -992,13 +992,13 @@
         "quant_final_answer_seen_earlier_count",
         "quant_terminal_line_has_arithmetic_expression"
       ],
-      "outcome_accuracy": 0.4725,
-      "beneficial_roc_auc": 0.5554703084241215,
-      "beneficial_pr_auc": 0.16447952154941609,
-      "harmful_roc_auc": 0.5730327801172488,
-      "harmful_pr_auc": 0.09725457553190275,
-      "beneficial_brier": 0.14026607326978194,
-      "beneficial_ece": 0.12419640976662684,
+      "outcome_accuracy": 0.4675,
+      "beneficial_roc_auc": 0.5558283463761444,
+      "beneficial_pr_auc": 0.16472287763451293,
+      "harmful_roc_auc": 0.5731153496821072,
+      "harmful_pr_auc": 0.09735673661531058,
+      "beneficial_brier": 0.14026486110276226,
+      "beneficial_ece": 0.12426523007752938,
       "intervention_curve": [
         {
           "budget": 0.0,
@@ -1068,14 +1068,14 @@
         {
           "budget": 1.0,
           "allowed_interventions": 400,
-          "num_interventions": 300,
+          "num_interventions": 301,
           "accuracy": 0.6825,
           "net_correctness_gain": 21,
           "beneficial_selected": 43,
           "harmful_selected": 22,
-          "beneficial_switch_precision": 0.14333333333333334,
+          "beneficial_switch_precision": 0.14285714285714285,
           "beneficial_switch_recall": 0.7543859649122807,
-          "harmful_switch_rate": 0.07333333333333333,
+          "harmful_switch_rate": 0.07308970099667775,
           "avoided_harm_rate": 0.33333333333333337
         }
       ],
@@ -1155,8 +1155,8 @@
       "beneficial_pr_auc": 0.21035570618590688,
       "harmful_roc_auc": 0.5206836759970275,
       "harmful_pr_auc": 0.10762142546077016,
-      "beneficial_brier": 0.15730949531970734,
-      "beneficial_ece": 0.13922839814019702,
+      "beneficial_brier": 0.15730949531970478,
+      "beneficial_ece": 0.13922839814019158,
       "intervention_curve": [
         {
           "budget": 0.0,
@@ -1309,12 +1309,12 @@
         "quant_terminal_line_has_arithmetic_expression"
       ],
       "outcome_accuracy": 0.57,
-      "beneficial_roc_auc": 0.6470768758631272,
-      "beneficial_pr_auc": 0.23561178014873835,
-      "harmful_roc_auc": 0.5462802411031293,
-      "harmful_pr_auc": 0.10506591485305608,
-      "beneficial_brier": 0.13105830726187295,
-      "beneficial_ece": 0.09391591044562805,
+      "beneficial_roc_auc": 0.6466165413533835,
+      "beneficial_pr_auc": 0.2349896793024239,
+      "harmful_roc_auc": 0.5471885063165717,
+      "harmful_pr_auc": 0.10533465524018268,
+      "beneficial_brier": 0.13101534427194156,
+      "beneficial_ece": 0.09412419178928438,
       "intervention_curve": [
         {
           "budget": 0.0,
@@ -1372,12 +1372,12 @@
           "budget": 0.5,
           "allowed_interventions": 200,
           "num_interventions": 200,
-          "accuracy": 0.69,
-          "net_correctness_gain": 24,
-          "beneficial_selected": 37,
+          "accuracy": 0.6875,
+          "net_correctness_gain": 23,
+          "beneficial_selected": 36,
           "harmful_selected": 13,
-          "beneficial_switch_precision": 0.185,
-          "beneficial_switch_recall": 0.6491228070175439,
+          "beneficial_switch_precision": 0.18,
+          "beneficial_switch_recall": 0.631578947368421,
           "harmful_switch_rate": 0.065,
           "avoided_harm_rate": 0.6060606060606061
         },
@@ -1385,14 +1385,14 @@
           "budget": 1.0,
           "allowed_interventions": 400,
           "num_interventions": 303,
-          "accuracy": 0.68,
-          "net_correctness_gain": 20,
+          "accuracy": 0.6825,
+          "net_correctness_gain": 21,
           "beneficial_selected": 47,
-          "harmful_selected": 27,
+          "harmful_selected": 26,
           "beneficial_switch_precision": 0.1551155115511551,
           "beneficial_switch_recall": 0.8245614035087719,
-          "harmful_switch_rate": 0.0891089108910891,
-          "avoided_harm_rate": 0.18181818181818177
+          "harmful_switch_rate": 0.0858085808580858,
+          "avoided_harm_rate": 0.21212121212121215
         }
       ],
       "selective_risk_curve_at_10pct": [
@@ -1410,8 +1410,8 @@
         },
         {
           "coverage": 0.7,
-          "selective_accuracy": 0.7857142857142857,
-          "selective_risk": 0.2142857142857143,
+          "selective_accuracy": 0.7821428571428571,
+          "selective_risk": 0.21785714285714286,
           "abstention_rate": 0.30000000000000004
         },
         {
@@ -1614,53 +1614,53 @@
         "budget": 0.05,
         "allowed_interventions": 20,
         "num_interventions": 20,
-        "accuracy": 0.635,
-        "net_correctness_gain": 2,
-        "beneficial_selected": 5,
-        "harmful_selected": 3,
-        "beneficial_switch_precision": 0.25,
-        "beneficial_switch_recall": 0.08771929824561403,
-        "harmful_switch_rate": 0.15,
-        "avoided_harm_rate": 0.9090909090909091
+        "accuracy": 0.6425,
+        "net_correctness_gain": 5,
+        "beneficial_selected": 6,
+        "harmful_selected": 1,
+        "beneficial_switch_precision": 0.3,
+        "beneficial_switch_recall": 0.10526315789473684,
+        "harmful_switch_rate": 0.05,
+        "avoided_harm_rate": 0.9696969696969697
       },
       {
         "budget": 0.1,
         "allowed_interventions": 40,
         "num_interventions": 40,
-        "accuracy": 0.6425,
-        "net_correctness_gain": 5,
-        "beneficial_selected": 9,
-        "harmful_selected": 4,
-        "beneficial_switch_precision": 0.225,
-        "beneficial_switch_recall": 0.15789473684210525,
-        "harmful_switch_rate": 0.1,
-        "avoided_harm_rate": 0.8787878787878788
+        "accuracy": 0.6475,
+        "net_correctness_gain": 7,
+        "beneficial_selected": 10,
+        "harmful_selected": 3,
+        "beneficial_switch_precision": 0.25,
+        "beneficial_switch_recall": 0.17543859649122806,
+        "harmful_switch_rate": 0.075,
+        "avoided_harm_rate": 0.9090909090909091
       },
       {
         "budget": 0.2,
         "allowed_interventions": 80,
         "num_interventions": 80,
-        "accuracy": 0.6675,
-        "net_correctness_gain": 15,
+        "accuracy": 0.6575,
+        "net_correctness_gain": 11,
         "beneficial_selected": 21,
-        "harmful_selected": 6,
+        "harmful_selected": 10,
         "beneficial_switch_precision": 0.2625,
         "beneficial_switch_recall": 0.3684210526315789,
-        "harmful_switch_rate": 0.075,
-        "avoided_harm_rate": 0.8181818181818181
+        "harmful_switch_rate": 0.125,
+        "avoided_harm_rate": 0.696969696969697
       },
       {
         "budget": 0.5,
         "allowed_interventions": 200,
         "num_interventions": 200,
-        "accuracy": 0.685,
-        "net_correctness_gain": 22,
-        "beneficial_selected": 35,
-        "harmful_selected": 13,
-        "beneficial_switch_precision": 0.175,
-        "beneficial_switch_recall": 0.6140350877192983,
-        "harmful_switch_rate": 0.065,
-        "avoided_harm_rate": 0.6060606060606061
+        "accuracy": 0.6925,
+        "net_correctness_gain": 25,
+        "beneficial_selected": 37,
+        "harmful_selected": 12,
+        "beneficial_switch_precision": 0.185,
+        "beneficial_switch_recall": 0.6491228070175439,
+        "harmful_switch_rate": 0.06,
+        "avoided_harm_rate": 0.6363636363636364
       },
       {
         "budget": 1.0,

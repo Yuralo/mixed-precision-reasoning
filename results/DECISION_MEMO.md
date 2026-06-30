@@ -25,7 +25,7 @@ The clean subset retains 25 BNB4-only wins and 47 FP16-only wins across 325 exam
 ## 2. What failed or remains unsupported?
 
 - **Utility routing is weak.** At a 10% rerun budget, the best learned model reaches 65.50%; entropy reaches 66.00%, always-FP16 reaches 69.00%, and the oracle reaches 73.00%. At 20%, the oracle reaches 77.25%. The opportunity exists, but the current features do not identify it reliably.
-- **Early-token control is not ready.** The best beneficial-switch ROC-AUC is 0.502 at 16 tokens, 0.572 at 32, and 0.639 at 64. Even the best 10% prefix router reaches only 64.75%.
+- **Early-token control is not ready.** The best beneficial-switch ROC-AUC is 0.502 at 16 tokens, 0.570 at 32, and 0.640 at 64. Even the best 10% prefix router reaches only 65.00%.
 - **Longer does not yet mean more reasoning.** BNB4 emits more tokens overall, but heuristic arithmetic-expression and self-correction counts do not rise systematically in rescue cases.
 - **The clean trajectory contrast is suggestive, not conclusive.** Clean BNB4 rescues are +21.72 tokens longer on average, while clean BNB4-induced failures are -14.30; the groups are small and their individual confidence intervals include zero.
 - **Naive first-divergence position is not mechanistic evidence.** Independent greedy outputs often differ immediately because tokenization/wording paths split; a same-prefix logit comparison is needed.
