@@ -1,5 +1,8 @@
 # Project guide: Precision as a Control Variable for Reasoning
 
+For the consolidated result tables, hypothesis verdicts, novelty assessment, and
+continue/pivot recommendation, read [`FINAL_ASSESSMENT.md`](FINAL_ASSESSMENT.md).
+
 ## 1. The problem
 
 Quantization stores model weights or activations with fewer bits. It reduces memory,

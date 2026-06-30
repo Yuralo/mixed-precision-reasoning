@@ -1,5 +1,8 @@
 # Stage 1 results and novelty audit
 
+The completed cross-experiment synthesis, including the temperature control and final
+thesis recommendation, is in [`FINAL_ASSESSMENT.md`](FINAL_ASSESSMENT.md).
+
 Audit date: 30 June 2026
 
 ## Executive verdict
