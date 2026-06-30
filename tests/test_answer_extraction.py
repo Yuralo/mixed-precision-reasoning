@@ -1,6 +1,6 @@
 import unittest
 
-from src.answer_extraction import extract_answer, is_correct
+from src.answer_extraction import extract_answer, extract_hash_answer, is_correct
 
 
 class AnswerExtractionTests(unittest.TestCase):
@@ -12,6 +12,10 @@ class AnswerExtractionTests(unittest.TestCase):
 
     def test_correctness(self):
         self.assertTrue(is_correct("Therefore #### 8", "work #### 8.0"))
+
+    def test_strict_hash_extraction(self):
+        self.assertIsNone(extract_hash_answer("The final number is 8"))
+        self.assertEqual(extract_hash_answer("Therefore #### 8"), "8")
 
 
 if __name__ == "__main__":

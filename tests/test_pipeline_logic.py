@@ -2,6 +2,7 @@ import unittest
 
 from src.compare_outputs import compare_runs
 from src.feature_logging import build_feature_tables
+from src.oracle_recovery import oracle_recovery_report
 
 
 def output(example_id, answer, correct):
@@ -24,8 +25,8 @@ def output(example_id, answer, correct):
 class PipelineLogicTests(unittest.TestCase):
     def test_comparison_and_aggregation(self):
         comparisons, summary = compare_runs(
-            [output("a", 7, True), output("b", 7, True)],
-            [output("a", 6, False), output("b", 7, True)],
+            [output("a", 7, True), output("b", 7, True), output("c", 6, False)],
+            [output("a", 6, False), output("b", 7, True), output("c", 7, True)],
         )
         self.assertEqual(summary["fp_correct_quant_wrong"], 1)
         self.assertEqual(summary["critical_failure_rate"], 0.5)
@@ -56,6 +57,11 @@ class PipelineLogicTests(unittest.TestCase):
         by_id = {row["example_id"]: row for row in example_rows}
         self.assertEqual(by_id["a"]["target_quantization_failure"], 1)
         self.assertEqual(by_id["a"]["max_entropy"], 1.2)
+
+        oracle = oracle_recovery_report(comparisons, [0.0, 0.5, 1.0])
+        self.assertEqual(oracle["best_selector_accuracy"], 1.0)
+        self.assertEqual(oracle["at_most_budget_curve"][-1]["accuracy"], 1.0)
+        self.assertAlmostEqual(oracle["exact_budget_curve"][-1]["accuracy"], 2 / 3)
 
 
 if __name__ == "__main__":

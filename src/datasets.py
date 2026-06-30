@@ -26,6 +26,7 @@ def load_reasoning_dataset(
     split: str = "test",
     subset: str = "main",
     limit: int | None = None,
+    offset: int = 0,
     tiny: bool = False,
     seed: int = 42,
 ) -> list[dict[str, Any]]:
@@ -39,9 +40,11 @@ def load_reasoning_dataset(
 
         source = load_dataset("openai/gsm8k", subset, split=split)
 
-    n = len(source) if limit is None else min(limit, len(source))
+    if offset < 0:
+        raise ValueError("offset must be non-negative")
+    stop = len(source) if limit is None else min(offset + limit, len(source))
     rows = []
-    for index in range(n):
+    for index in range(offset, stop):
         item = source[index]
         rows.append(
             {

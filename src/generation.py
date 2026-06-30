@@ -9,7 +9,7 @@ from typing import Any, Callable
 
 import torch
 
-from .answer_extraction import extract_answer, is_correct
+from .answer_extraction import extract_answer, extract_hash_answer, is_correct
 
 
 LOGGER = logging.getLogger(__name__)
@@ -34,6 +34,8 @@ def generate_with_features(
     prompt: str,
     max_new_tokens: int = 64,
     use_chat_template: bool = True,
+    stop_after_answer: bool = False,
+    answer_stop_grace_tokens: int = 4,
 ) -> dict[str, Any]:
     rendered = format_prompt(tokenizer, prompt, use_chat_template)
     encoded = tokenizer(rendered, return_tensors="pt")
@@ -45,6 +47,8 @@ def generate_with_features(
     past_key_values = None
     next_input = input_ids
     started = time.perf_counter()
+    answer_detected_at: int | None = None
+    stop_reason = "max_new_tokens"
 
     for position in range(max_new_tokens):
         outputs = model(
@@ -79,7 +83,15 @@ def generate_with_features(
         generated.append(token_id)
         past_key_values = outputs.past_key_values
         if token_id == tokenizer.eos_token_id:
+            stop_reason = "eos"
             break
+        if stop_after_answer:
+            partial_text = tokenizer.decode(generated, skip_special_tokens=True)
+            if answer_detected_at is None and extract_hash_answer(partial_text) is not None:
+                answer_detected_at = position
+            if answer_detected_at is not None and position - answer_detected_at >= answer_stop_grace_tokens:
+                stop_reason = "answer_detected"
+                break
         next_input = torch.tensor([[token_id]], device=input_ids.device)
         attention_mask = torch.cat(
             [attention_mask, torch.ones((1, 1), dtype=attention_mask.dtype, device=input_ids.device)], dim=1
@@ -93,6 +105,10 @@ def generate_with_features(
         "generation_tokens": len(generated),
         "latency_seconds": elapsed,
         "tokens_per_second": len(generated) / elapsed if elapsed else None,
+        "max_new_tokens": max_new_tokens,
+        "stop_reason": stop_reason,
+        "hit_max_new_tokens": stop_reason == "max_new_tokens",
+        "has_hash_answer": extract_hash_answer(text) is not None,
         "token_features": token_rows,
     }
 
@@ -107,13 +123,21 @@ def evaluate_examples(
     log_every: int = 1,
     checkpoint_every: int = 0,
     checkpoint_callback: Callable[[list[dict[str, Any]], list[dict[str, Any]]], None] | None = None,
+    stop_after_answer: bool = False,
+    answer_stop_grace_tokens: int = 4,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     outputs, token_features = [], []
     total = len(examples)
     evaluation_started = time.perf_counter()
     for index, example in enumerate(examples, start=1):
         result = generate_with_features(
-            model, tokenizer, example["prompt"], max_new_tokens, use_chat_template
+            model,
+            tokenizer,
+            example["prompt"],
+            max_new_tokens,
+            use_chat_template,
+            stop_after_answer,
+            answer_stop_grace_tokens,
         )
         row = {
             **example,
@@ -125,6 +149,10 @@ def evaluate_examples(
             "generation_tokens": result["generation_tokens"],
             "latency_seconds": result["latency_seconds"],
             "tokens_per_second": result["tokens_per_second"],
+            "max_new_tokens": result["max_new_tokens"],
+            "stop_reason": result["stop_reason"],
+            "hit_max_new_tokens": result["hit_max_new_tokens"],
+            "has_hash_answer": result["has_hash_answer"],
             "model": model_info,
         }
         outputs.append(row)
@@ -144,13 +172,14 @@ def evaluate_examples(
             eta = (total - index) / rate if rate else 0.0
             running_accuracy = sum(bool(item["correct"]) for item in outputs) / index
             LOGGER.info(
-                "[%d/%d %5.1f%%] id=%s new_tokens=%d example=%.1fs tok/s=%.1f "
+                "[%d/%d %5.1f%%] id=%s new_tokens=%d stop=%s example=%.1fs tok/s=%.1f "
                 "running_acc=%.3f elapsed=%s eta=%s",
                 index,
                 total,
                 100.0 * index / total if total else 100.0,
                 example["example_id"],
                 result["generation_tokens"],
+                result["stop_reason"],
                 result["latency_seconds"],
                 result["tokens_per_second"] or 0.0,
                 running_accuracy,

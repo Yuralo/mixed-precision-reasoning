@@ -30,6 +30,12 @@ def extract_answer(text: str) -> str | None:
     return normalize_numeric_answer(numbers[-1]) if numbers else None
 
 
+def extract_hash_answer(text: str) -> str | None:
+    """Return only an explicitly marked GSM8K answer, without numeric fallback."""
+    hashes = HASH_ANSWER.findall(text)
+    return normalize_numeric_answer(hashes[-1]) if hashes else None
+
+
 def is_correct(generation: str, reference: str) -> bool:
     predicted = extract_answer(generation)
     gold = extract_answer(reference)

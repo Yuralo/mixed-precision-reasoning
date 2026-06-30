@@ -61,18 +61,21 @@ def run_evaluation(args, forced_quantization: str | None = None) -> tuple[Path, 
     )
     tiny = args.tiny if args.tiny is not None else bool(dataset_cfg.get("tiny", False))
     limit = args.limit if args.limit is not None else dataset_cfg.get("limit")
+    dataset_split = args.dataset_split or dataset_cfg.get("split", "test")
+    dataset_subset = args.dataset_subset or dataset_cfg.get("subset", "main")
     LOGGER.info(
         "Loading dataset=%s split=%s tiny=%s limit=%s...",
         dataset_cfg.get("name", "gsm8k"),
-        dataset_cfg.get("split", "test"),
+        dataset_split,
         tiny,
         limit,
     )
     examples = load_reasoning_dataset(
         name=dataset_cfg.get("name", "gsm8k"),
-        split=dataset_cfg.get("split", "test"),
-        subset=dataset_cfg.get("subset", "main"),
+        split=dataset_split,
+        subset=dataset_subset,
         limit=limit,
+        offset=args.offset,
         tiny=tiny,
         seed=seed,
     )
@@ -101,6 +104,8 @@ def run_evaluation(args, forced_quantization: str | None = None) -> tuple[Path, 
         log_every=max(0, args.log_every),
         checkpoint_every=max(0, args.checkpoint_every),
         checkpoint_callback=save_checkpoint,
+        stop_after_answer=args.stop_after_answer,
+        answer_stop_grace_tokens=max(0, args.answer_stop_grace_tokens),
     )
     write_jsonl_atomic(output_path, outputs)
     write_jsonl_atomic(token_path, token_features)

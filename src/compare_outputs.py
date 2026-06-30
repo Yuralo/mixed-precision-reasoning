@@ -45,6 +45,12 @@ def compare_runs(fp_rows: list[dict], quant_rows: list[dict]) -> tuple[list[dict
                 "prompt_tokens": quant["prompt_tokens"],
                 "fp_generation_tokens": fp["generation_tokens"],
                 "quant_generation_tokens": quant["generation_tokens"],
+                "fp_hit_max_new_tokens": fp.get("hit_max_new_tokens"),
+                "quant_hit_max_new_tokens": quant.get("hit_max_new_tokens"),
+                "fp_has_hash_answer": fp.get("has_hash_answer"),
+                "quant_has_hash_answer": quant.get("has_hash_answer"),
+                "fp_stop_reason": fp.get("stop_reason"),
+                "quant_stop_reason": quant.get("stop_reason"),
                 "fp_model": fp["model"],
                 "quant_model": quant["model"],
             }

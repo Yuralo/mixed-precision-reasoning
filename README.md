@@ -9,6 +9,9 @@ identifiable uncertainty regimes. The implemented MVP covers:
 4. example-level aggregation and logistic-regression/random-forest predictors;
 5. entropy, margin, and random baselines plus recall at 5/10/20% budgets.
 
+The current directed sequence and exact RTX 3090 commands are in
+[`EXPERIMENT_PLAN.md`](EXPERIMENT_PLAN.md).
+
 The target is strictly **FP correct, quantized wrong**. Predictor training excludes
 FP-wrong examples so the negative class is FP-correct/quantized-correct. FP/Q token
 disagreement is retained for analysis, but deliberately excluded from the default
@@ -96,6 +99,10 @@ every 10 examples by default. Use `--log-every 5`, `--checkpoint-every 25`, or
 - `runs/token_features.parquet`: aligned quantized token traces and FP token comparison.
 - `runs/example_features.parquet`: cheap aggregate predictor inputs.
 - `runs/predictor_metrics.json`, `runs/models/*.joblib`: model/baseline metrics and fitted models.
+- `runs/predictor_predictions.parquet`: per-example held-out sensitivity scores.
+- `runs/diagnostics.json`: truncation, strict-answer, and extraction-quality checks.
+- `runs/figures/*.{png,pdf}`: standardized accuracy, failure-concentration,
+  predictor, controller, oracle, and generation-quality figures.
 - `notebooks/analysis.ipynb`: summary tables and an entropy-score/failure-probability
   curve saved as `runs/sensitivity_vs_failure.png`.
 

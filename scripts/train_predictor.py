@@ -11,10 +11,21 @@ def main() -> None:
     parser.add_argument("--features", default="runs/example_features.parquet")
     parser.add_argument("--output-dir", default="runs/models")
     parser.add_argument("--metrics", default="runs/predictor_metrics.json")
+    parser.add_argument("--test-features", help="Independent held-out example_features.parquet")
+    parser.add_argument("--predictions", default="runs/predictor_predictions.parquet")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--test-size", type=float, default=0.3)
+    parser.add_argument("--quality-filter", choices=["none", "both_hash", "clean"], default="none")
     args = parser.parse_args()
-    report = train_predictors(args.features, args.output_dir, args.seed, args.test_size)
+    report = train_predictors(
+        args.features,
+        args.output_dir,
+        args.seed,
+        args.test_size,
+        args.test_features,
+        args.predictions,
+        args.quality_filter,
+    )
     write_json(args.metrics, report)
     print(report)
 

@@ -55,6 +55,11 @@ def read_jsonl(path: str | Path) -> list[dict[str, Any]]:
         return [json.loads(line) for line in handle if line.strip()]
 
 
+def read_json(path: str | Path) -> dict[str, Any]:
+    with Path(path).open("r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
 def write_json(path: str | Path, payload: dict[str, Any]) -> None:
     target = ensure_parent(path)
     with target.open("w", encoding="utf-8") as handle:
